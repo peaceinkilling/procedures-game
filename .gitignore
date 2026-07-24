@@ -1,0 +1,6 @@
+doc 2 main remove/
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+

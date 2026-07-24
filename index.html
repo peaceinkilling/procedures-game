@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Depot Run — Issue & Receipt Procedures</title>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brandmark" aria-hidden="true">◈</div>
+        <div>
+          <h1>Depot Run: Issue & Receipt</h1>
+          <div class="sub">TACTICAL PROCEDURE SIMULATOR · SOURCE-REVIEWED TRAINING CORE</div>
+        </div>
+      </div>
+      <div class="hud" aria-label="Mission statistics">
+        <div class="stat"><span>Score</span><b id="score">0</b></div>
+        <div class="stat"><span>Combo</span><b id="combo">0</b></div>
+        <div class="stat"><span>Time</span><b id="timer">00:00</b></div>
+        <div class="stat"><span>Lives</span><b id="lives">♥♥♥</b></div>
+        <div class="stat speed-stat"><span>Move</span><b id="speed">360</b></div>
+      </div>
+    </header>
+
+    <div class="mission-strip" aria-label="Mission guidance">
+      <div class="objective">
+        <small id="modeLabel">Mission</small>
+        <b id="objectiveTitle">Choose a mission</b>
+        <p id="objectiveText">Use WASD or arrow keys to move. Press E or Space near an office.</p>
+      </div>
+      <div class="compass" id="compass" aria-label="Direction to next office"><div class="arrow" id="arrow">➤</div></div>
+    </div>
+
+    <div class="layout">
+      <section class="game-panel" aria-label="Playable depot">
+        <div class="canvas-wrap">
+          <canvas id="game" width="1200" height="675" aria-label="Top-down playable depot map"></canvas>
+          <div class="prompt" id="prompt">Press E to interact</div>
+          <div class="flash" id="flash"></div>
+        </div>
+        <div class="game-controls">
+          <div>
+            <button class="btn primary" id="interactBtn" type="button">Interact / E</button>
+            <button class="btn" id="boostBtn" type="button">Boost / Shift</button>
+            <button class="btn" id="soundBtn" type="button">Sound: On</button>
+            <button class="btn danger" id="quitBtn" type="button">Quit Mission</button>
+          </div>
+          <div class="touch" aria-label="Touch controls">
+            <button class="up" data-key="ArrowUp" type="button">▲</button>
+            <button class="left" data-key="ArrowLeft" type="button">◀</button>
+            <button class="down" data-key="ArrowDown" type="button">▼</button>
+            <button class="right" data-key="ArrowRight" type="button">▶</button>
+            <button class="act" id="touchAct" type="button">ACTION</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="section-title">Live mission</div>
+        <div class="card">
+          <h3>Current cargo</h3>
+          <div class="cargo"><div class="cargo-icon" id="cargoIcon">📄</div><div><b id="cargoName">None</b><span id="cargoState">Mission not started</span></div></div>
+        </div>
+        <div class="card office-intel-card" id="officeIntelCard">
+          <div class="intel-kicker">CLICK ANY OFFICE · TACTICAL DOSSIER</div>
+          <div class="intel-title"><span id="intelIcon">⌁</span><div><h3 id="intelName">Office intelligence</h3><p id="intelRole">Select an office on the map to inspect its role.</p></div></div>
+          <div class="intel-context-grid">
+            <div><b>Mission logic</b><p id="why">The game will explain why each office receives the document or stores.</p></div>
+            <div><b>Concurrent picture</b><p><span id="companionState">Choose a character.</span><br><span id="waitingState">The Hangar will show what waits elsewhere.</span></p></div>
+          </div>
+          <div class="memory-code" id="intelMemory">MAP → CLICK → REMEMBER</div>
+          <div class="intel-section"><b>Core actions</b><ul id="intelActions"><li>Office duties will appear here in procedural order.</li></ul></div>
+          <div class="intel-section"><b>Situations</b><ul id="intelSituations"><li>Normal and conditional situations will appear here.</li></ul></div>
+          <div class="intel-section deviation"><b>Deviations / cautions</b><ul id="intelDeviations"><li>Incorrect shortcuts and exception branches will appear here.</li></ul></div>
+          <div class="intel-source" id="intelSource">Source-backed office data</div>
+        </div>
+        <div class="card"><h3>Route progress</h3><div class="route" id="route"></div></div>
+        <div class="card"><h3>Custody & logic log</h3><div class="handoff-log" id="handoffLog"><p>No hand-off completed yet.</p></div></div>
+        <div class="card"><h3>Source status</h3><p id="sourceStatus">Choose a character to see its review status.</p></div>
+        <div class="card"><h3>Controls</h3><p class="tip"><b>Move:</b> WASD / arrow keys<br><b>Boost:</b> hold Shift<br><b>Office intel:</b> click a building<br><b>Interact:</b> E / Space<br><b>Mobile:</b> on-screen controls<br><b>Wrong office:</b> life and time penalty</p></div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="overlay" id="startOverlay">
+    <div class="modal hangar-modal">
+      <h2>Character Selection Hangar</h2>
+      <p class="lead">All 53 Issue and Receipt entities are source-reviewed and playable. Each character teaches its complete office route, copy-specific purpose, concurrent records, closure evidence and final disposition. The IV2/IV5 source anomaly remains disclosed wherever it matters.</p>
+
+      <div class="section-title">1. Choose difficulty</div>
+      <div class="mode-grid" id="modeGrid">
+        <button class="option-card selected" data-mode="learn" type="button"><div class="ico">🧭</div><b>Learn</b><span>Target office glows, compass stays visible, generous lives and full explanations.</span></button>
+        <button class="option-card" data-mode="arcade" type="button"><div class="ico">⚡</div><b>Arcade</b><span>Less guidance, a faster penalty clock and combo scoring.</span></button>
+        <button class="option-card" data-mode="exam" type="button"><div class="ico">🎯</div><b>Exam</b><span>No glowing target and no compass. Recall the route from memory.</span></button>
+      </div>
+
+      <div class="section-title spaced">2. Choose operation</div>
+      <div class="mission-grid" id="missionGrid">
+        <button class="option-card selected" data-mission="campaign" type="button"><div class="ico">🏁</div><b>Full Issue Operation</b><span>Run the complete source-backed procedure through control, physical movement, accounts and closure.</span></button>
+        <button class="option-card" data-mission="role" type="button"><div class="ico">📜</div><b>Character Campaign</b><span>Master the selected entity’s complete source-reviewed lifecycle.</span></button>
+        <button class="option-card" data-mission="random" type="button"><div class="ico">🎲</div><b>Random Operation</b><span>Chooses from the playable source-reviewed roster and varies the scenario.</span></button>
+      </div>
+
+      <div class="hangar-head">
+        <div>
+          <div class="section-title" id="hangarTitle">3. Choose Issue character</div>
+          <p id="hangarSummary" class="tip"></p>
+        </div>
+        <label class="field">Procedure
+          <select class="select" id="procedureSelect">
+            <option value="Issue">Issue Procedure</option>
+            <option value="Receipt">Receipt Procedure</option>
+          </select>
+        </label>
+        <label class="field">Filter roster
+          <select class="select" id="rosterFilter">
+            <option value="all">All Issue entities</option>
+            <option value="playable">Playable routes</option>
+            <option value="anomaly">Source-qualified rulings</option>
+          </select>
+        </label>
+      </div>
+      <div class="hangar-grid" id="hangarGrid" aria-live="polite"></div>
+      <div class="selection-detail card" id="selectionDetail"></div>
+      <input type="hidden" id="roleSelect" value="iv1">
+      <div class="start-row">
+        <div class="review-key"><span class="status-dot approved"></span> Source-reviewed and playable <span class="status-dot legacy"></span> Qualified ruling with disclosed source anomaly</div>
+        <button class="btn primary" id="startBtn" type="button">Start Character Run</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="miniOverlay"><div class="modal" id="miniModal"></div></div>
+  <div class="overlay hidden" id="endOverlay">
+    <div class="modal">
+      <div class="stars" id="stars">★★★</div>
+      <h2 id="endTitle">Mission Complete</h2>
+      <p class="lead" id="endText"></p>
+      <div class="card"><h3>Your route</h3><div class="route" id="endRoute"></div></div>
+      <div class="card"><h3>Operational debrief</h3><p id="debrief"></p></div>
+      <div class="card mastery-card"><h3>Route Recall Challenge</h3><p id="recallStatus">Complete the mission, then reconstruct every hand-off from memory.</p><div id="recallChoices" class="choice-grid hidden"></div><button class="btn" id="recallBtn" type="button">Begin Recall</button></div>
+      <div class="start-row"><button class="btn" id="menuBtn" type="button">Mission Menu</button><button class="btn primary" id="againBtn" type="button">Play Again</button></div>
+    </div>
+  </div>
+
+  <script src="src/procedure-data.js"></script>
+  <script src="src/map.js"></script>
+  <script src="src/ui.js"></script>
+  <script src="src/engine.js"></script>
+  <script src="src/main.js"></script>
+  <script src="src/smoke-runner.js"></script>
+</body>
+</html>
