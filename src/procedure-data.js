@@ -262,11 +262,15 @@
     crvException:['ReceiptArea','ReceiptControl','ReceiptProgress','CAB','RPS','ReceiptProgress','CAB','RPS'],
     ctcException:['ReceiptProgress','ReceiptControl','ReceiptArea','ReceiptLiaison','ReceiptProgress','Provision','RPS','CentralRegistry','Consignor']
   };
+  const receiptRouteVariants={
+    receiptVoucher1NoDuesOut:['Consignor','CentralRegistry','Provision','ReceiptProgress','ReceiptLiaison','ReceiptControl','ReceiptArea','ReceiptLiaison','MLRS','DOC','ReceiptLiaison','ReceiptProgress','CAB'],
+    receiptVoucher1DuesOut:receiptRoutes.receiptVoucher1
+  };
   const legacyFullReceiptRoute=['Consignor','CentralRegistry','Provision','ReceiptProgress','TrafficReceipts','ReceiptArea','ReceiptLiaison','ReceiptProgress','ReceiptControl','ReceiptArea','ReceiptLiaison','MLRS','DOC','FPVRelease','ReceiptLiaison','ReceiptArea','BulkStore','ReceiptLiaison','ReceiptProgress','CAB','Provision','RPS','Consignor'];
   Object.assign(routes,receiptRoutes);
   characters.push(
     receiptApproved('advanceIssueVoucher','Advance copy of consignor’s Issue Voucher','Receipt control documents','📨',receiptRoutes.advanceIssueVoucher,'Receipt Progress consignor pad awaiting stores copy','Advance and stores copies linked',[raosReceipt,dgosReceipt,'DGOSTI-001 Appendix A–B (PDF pp.11–13)']),
-    receiptApproved('receiptVoucher1','Receipt Voucher No. 1','Receipt Voucher characters','🟦',receiptRoutes.receiptVoucher1,'CAB filing after account-card posting','RCRS posting date and account reference recorded',[raosReceipt,dgosReceipt,'DGOSTI-001 Appendices D–O (PDF pp.25–53)']),
+    receiptApproved('receiptVoucher1','Receipt Voucher No. 1','Receipt Voucher characters','🟦',receiptRoutes.receiptVoucher1,'CAB filing after account-card posting','RCRS posting date and account reference recorded',[raosReceipt,dgosReceipt,'DGOSTI-001 Appendices D–O (PDF pp.25–53)'],{reviewNote:'DGOSTI-001 conditionality preserved: the no-dues-out route bypasses FPV Release; a dues-out quantity visits FPV Release before RV1 returns to Liaison.'}),
     receiptApproved('receiptVoucher2','Receipt Voucher No. 2','Receipt Voucher characters','🟩',receiptRoutes.receiptVoucher2,'Returned receipted to consignor','Provision inks dues-in; R&PS/CRS forwards receipted RV2',[raosReceipt,dgosReceipt,'DGOSTI-001 Appendix Q (PDF pp.56–58)']),
     receiptApproved('drs1','DRS Copy No. 1','Daily Receipt Sheet characters','1️⃣',receiptRoutes.drs1,'Traffic file with convoy note, serial order in pads of 100','Receipts Area acknowledgement and Traffic DRS Register clearance',[raosReceipt,'DGOSTI-001 Appendix C paras 7–9 (PDF pp.20–24)']),
     receiptApproved('drs2','DRS Copy No. 2','Daily Receipt Sheet characters','2️⃣',receiptRoutes.drs2,'Receipts Progress serial-number file in pads of 100','DRS Register columns completed and DRS3 annotated before DRS2 filing',[raosReceipt,'DGOSTI-001 Appendix D paras 5 and 7(b) (PDF pp.27, 29–30)','DGOSTI-001 Appendix F para 7 (PDF p.38)']),
@@ -359,12 +363,56 @@
     characterId,from,to:route[index+1],support:supported?'primary-supported':'prototype-unverified',primarySourceRef:supported?character.primarySourceRefs.join('; '):null,domainReview:!supported
   });}));
   const campaignTransitions=Object.entries(campaigns).flatMap(([campaignId,campaign])=>campaign.route.slice(0,-1).map((from,index)=>({id:`${campaignId}:${index}:${from}->${campaign.route[index+1]}`,characterId:campaignId,from,to:campaign.route[index+1],support:'primary-supported',handoffType:campaign.stages[index].handoffToNext,primarySourceRef:campaign.primarySourceRefs.join('; '),domainReview:false})));
-  const transitions=[...routeTransitions,...campaignTransitions];
+  const variantTransitions=receiptRouteVariants.receiptVoucher1NoDuesOut.slice(0,-1).map((from,index)=>({id:`receiptVoucher1:no-dues:${index}:${from}->${receiptRouteVariants.receiptVoucher1NoDuesOut[index+1]}`,characterId:'receiptVoucher1',from,to:receiptRouteVariants.receiptVoucher1NoDuesOut[index+1],support:'primary-supported',primarySourceRef:'DGOSTI-001 Appendices F, G, J, K and O (PDF pp.36–53)',domainReview:false}));
+  const transitions=[...routeTransitions,...campaignTransitions,...variantTransitions];
+  const formSchemas={
+    irps:{
+      procedure:'Issue',title:'Issue Registration Progress Sheet (IRPS)',format:'Two copies: Original is the R&PS/CRS progress medium; Duplicate supports SDIC execution progress.',copy:'ORIGINAL / DUPLICATE',
+      source:'DGOSTI-002 Appendix A (PDF p.56); paras 28, 51, 66–70, 210–214',
+      columns:[['1','Serial No.'],['2','Unit'],['3','Unit demand No. and date'],['4','No. of items'],['5','Control No.—Section'],['6','Control No.—Number'],['7','Control No.—Date'],['8','Date No. 5 received'],['9','Date No. 6 received'],['10','Date No. 2 received'],['11','Remarks']],
+      events:{
+        ISS:{fields:['1','2','3','4'],note:'ISS opens the two-copy progress medium with demand identity and item count.'},
+        ICR:{fields:['5','6','7'],note:'Issue Control allots and dates the depot control number; Original and Duplicate then split.'},
+        SDIC:{fields:[],note:'The Duplicate IRPS watches Sub-Depot execution. The printed form distinguishes SDIC from R&PS responsibility.'},
+        RPS:{fields:['8','9','10','11'],note:'R&PS marks receipt of No.5, No.6 and the returned acknowledgement copy; Remarks carries BY POST or N.A. when applicable.'}
+      }
+    },
+    trafficIssue:{
+      procedure:'Issue',title:'Traffic Register of Issues',format:'Bound Traffic control register; one line per controlled issue.',copy:'TRAFFIC REGISTER',
+      source:'DGOSTI-002 Appendix B (PDF p.57); paras 164, 176–180',
+      columns:[['1','Control number'],['2','Date stores collected'],['3','Date No.1 copy to consignee'],['4','Date stores despatched'],['5','Wagon No./RR No.'],['6','Remarks']],
+      events:{Packing:{fields:['1','2'],note:'Traffic takeover establishes control-number and collection-date evidence.'},Traffic:{fields:['3','4','5','6'],note:'Traffic records No.1 despatch, stores despatch, and wagon/RR reference when applicable.'}}
+    },
+    rcrs:{
+      procedure:'Receipt',title:'Receipts Control Registration Sheet (RCRS)',format:'Prepared in triplicate: No.1 to Receipts Progress, No.2 to R&PS/CRS, No.3 to Central Accounts.',copy:'COPIES 1 / 2 / 3',
+      source:'DGOSTI-001 Appendix G paras 2(d)–3 (PDF pp.39–40), Annexure 12 (PDF p.67)',
+      columns:[['1','Control No.'],['2','Consignor'],['3','Consignor’s I Vr No.'],['4','Consignor’s I Vr Date'],['5','DRS No.'],['6','DRS Date'],['7','Date: (1) No.1 to Accounts & No.2 to Provision; (2) No.1 in Accounts; (3) No.2 to Consignor'],['8','Date RV No.1 posted'],['9','Remarks']],
+      events:{
+        ReceiptControl:{fields:['1','2','3','4','5','6','9'],note:'Receipt Control completes columns 1–6. CRV or CTC is entered in Remarks when applicable; then the three copies split.'},
+        ReceiptProgress:{fields:['7'],note:'The progress copies use printed column 7 to watch distribution and return milestones; discrepancy cases receive the prescribed dash.'},
+        CAB:{fields:['7','8'],note:'CAB enters RV1 receipt in column 7, then column 8 with the actual posting date after checking.'},
+        RPS:{fields:['7'],note:'R&PS/CRS completes column 7 when receipted RV2/CTC/CRV clears for return to the consignor.'}
+      }
+    },
+    trafficDrs:{
+      procedure:'Receipt',title:'Traffic DRS Register',format:'Traffic register controlling the return of Daily Receipt Sheet No.1.',copy:'DRS NO.1 WATCH',
+      source:'DGOSTI-001 Appendix C, Annexure 9 (PDF p.64)',
+      columns:[['1','Serial No.'],['2','Date'],['3','Date No.1 DRS received'],['4','Remarks']],
+      events:{TrafficReceipts:{fields:['1','2'],note:'Traffic opens the DRS serial and date entry.'},ReceiptArea:{fields:['3','4'],note:'When DRS No.1 returns, Traffic records its receipt date and any necessary remark.'}}
+    },
+    subDepotDrs:{
+      procedure:'Receipt',title:'Sub Depot / Group DRS Register',format:'Progress register distinguishing DRS No.3 and DRS No.2 movements.',copy:'DRS NO.2 / NO.3 WATCH',
+      source:'DGOSTI-001 Appendix D, Annexure 10 (PDF p.65)',
+      columns:[['1','Serial No.'],['2','Date No.3 DRS received from Traffic representative'],['3','Date No.2 DRS received from Receipts Area'],['4','Date No.3 DRS passed to R&PS/CRS'],['5','Remarks']],
+      events:{ReceiptProgress:{fields:['1','2','3'],note:'Receipts Progress links the distinct No.3 and No.2 arrivals; the copies are not interchangeable.'},RPS:{fields:['4','5'],note:'The register shows the date No.3 was passed to R&PS/CRS and any necessary remark.'}}
+    }
+  };
+  const formByRole={irpsOriginal:'irps',irpsDuplicate:'irps',issuesControlSheet:'irps',trafficRegister:'trafficIssue',drs1:'trafficDrs',drs2:'subDepotDrs',drs3:'subDepotDrs',rcrs1:'rcrs',rcrs2:'rcrs',rcrs3:'rcrs'};
 
   return {
     procedure:'Issue and Receipt',
     receiptImplemented:true,
-    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,
+    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,formSchemas,formByRole,
     roleInfo:legacy,
     mapOfficeIds:{Issue:['DemandingUnit','HQ','ISS','ULC','IndentChecking','ICR','VoucherPrep','SDIC','DOC','MLRS','Selection','Packing','Traffic','CentralRegistry','CAB','SM','RPS','LAO'],Receipt:['Consignor','CentralRegistry','Provision','TrafficReceipts','ReceiptProgress','ReceiptArea','ReceiptLiaison','ReceiptControl','MLRS','DOC','FPVRelease','DuesOutSuspense','BulkStore','Packing','ReceiptDiscrepancy','DAO','CAB','RPS']},
     sourcePolicy:{primary:['RAOS Part II','DGOSTI-002','DGOSTI-001'],providedPrimaryExtracts:true,sourceMap:'docs/PROCEDURE_SOURCE_MAP.md'}

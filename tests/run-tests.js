@@ -15,10 +15,17 @@ assert.ok(data.characters.filter(item=>item.routeStatus==='approved').every(item
 assert.ok(data.characters.every(item=>item.playable),'Every roster entity must be playable.');
 assert.ok(['iv2','iv5','receiptedAcknowledgement'].every(id=>data.characters.find(item=>item.id===id).reviewNote.includes('213(n)')),'The isolated DGOSTI-002 para 213(n) anomaly must remain disclosed on every affected route.');
 assert.deepStrictEqual(data.routes.receiptVoucher1.slice(0,4),['Consignor','CentralRegistry','Provision','ReceiptProgress'],'RV1 must include its advance-copy route before stores-document marriage.');
+assert.ok(!data.receiptRouteVariants.receiptVoucher1NoDuesOut.includes('FPVRelease'),'RV1 without dues-out must bypass Further Part Voucher Release.');
+assert.ok(data.receiptRouteVariants.receiptVoucher1DuesOut.includes('FPVRelease'),'RV1 with dues-out must preserve Further Part Voucher Release.');
 assert.deepStrictEqual(data.routes.receiptVoucher2.slice(0,6),['ReceiptArea','ReceiptLiaison','ReceiptProgress','ReceiptLiaison','ReceiptControl','ReceiptArea'],'RV2 must return through Liaison between marriage and control.');
 assert.deepStrictEqual(data.routes.discrepancyReport,['ReceiptArea','ReceiptDiscrepancy','DAO','ReceiptDiscrepancy','DAO','Consignor'],'Receipt discrepancy control must return to the Sub-Depot for clearance before the completed case goes back through DAO.');
 assert.ok(data.campaigns.issueNormal.stages.some(stage=>stage.focus==='IV3 + IV4')&&data.campaigns.issueNormal.stages.some(stage=>stage.focus==='Returned IV2')&&data.campaigns.issueNormal.stages.some(stage=>stage.focus==='IV6'),'Full Issue must exercise every principal concurrent copy branch.');
 assert.ok(data.campaigns.receiptNormal.stages.some(stage=>stage.focus.includes('Advance RV1'))&&data.campaigns.receiptNormal.stages.some(stage=>stage.focus.includes('DRS1–3'))&&data.campaigns.receiptNormal.stages.some(stage=>stage.focus==='Receipted RV2'),'Full Receipt must distinguish advance, physical/DRS and acknowledgement streams.');
+assert.deepStrictEqual(data.formSchemas.rcrs.columns.map(column=>column[0]),['1','2','3','4','5','6','7','8','9'],'RCRS must reproduce all nine printed columns.');
+assert.ok(data.formSchemas.rcrs.events.ReceiptControl.fields.every(field=>Number(field)<=6||field==='9'),'Receipt Control must not invent completion of RCRS posting columns.');
+assert.deepStrictEqual(data.formSchemas.rcrs.events.CAB.fields,['7','8'],'CAB must show RCRS columns 7 then 8.');
+assert.deepStrictEqual(data.formSchemas.irps.columns.map(column=>column[0]),['1','2','3','4','5','6','7','8','9','10','11'],'IRPS must reproduce all eleven printed columns.');
+assert.ok(data.formSchemas.trafficDrs&&data.formSchemas.subDepotDrs&&data.formSchemas.trafficIssue,'All DGOSTI register twins must be present.');
 
 for(const procedure of ['Issue','Receipt']){
   const offices=data.mapOfficeIds[procedure].map(id=>Object.assign({},data.offices.find(item=>item.id===id),data.mapLayouts[procedure]?.[id]||{}));
@@ -50,6 +57,8 @@ assert.ok(html.indexOf('id="officeIntelCard"')>canvasIndex,'Office intelligence 
 assert.ok(/speed:3[6-9]\d/.test(engineSource),'Base character speed must remain at least 360 map units per second.');
 assert.ok(mainSource.includes("map.canvas.addEventListener('click'")&&mainSource.includes('ui.showOfficeIntel'),'Canvas office clicks must open the structured office dossier.');
 assert.ok(mapSource.includes("building(game.route[game.index],game.procedure)")&&uiSource.includes("map.building(game.route[game.index],game.procedure)"),'Receipt guidance arrows and compass must use the active procedure layout.');
+assert.ok(mainSource.includes("['1','2','3','4'].includes(event.key)")&&mainSource.includes("event.key==='i'"),'Every graded choice and nearest-office intelligence must be keyboard accessible.');
+assert.ok(uiSource.includes('updateRecordConsole')&&html.includes('id="recordConsole"'),'The live progressive document twin must remain outside the map.');
 
 console.log(`PASS: ${data.characters.length} Issue/Receipt roster entities validated.`);
 console.log(`PASS: ${data.transitions.length} declared transitions checked.`);
