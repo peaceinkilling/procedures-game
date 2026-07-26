@@ -14,7 +14,7 @@
   }
   function setSessionChip(){
     if(!current)return;
-    byId('sessionChip').innerHTML=current.bypass?'<b>FOLS</b><span>Authorised bypass · no analytics</span>':`<b>${current.name}</b><span>BOM ${current.course} · no analytics</span>`;
+    byId('sessionChip').innerHTML=current.bypass?'<b>FOLS</b><span>Access granted</span>':`<b>${current.name}</b><span>BOM ${current.course}</span>`;
   }
   function restoreSession(){
     current=safeParse(sessionStorage.getItem(sessionKey));

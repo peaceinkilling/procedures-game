@@ -14,8 +14,8 @@ See `ARCHIVE_DGOSTI_AUDIT.md` for the exact naming, inclusion and uncertainty ru
 ## Course access
 
 - BOM 105 and BOM 106 use their supplied course passwords.
-- Entering `FOLS` as the name activates the authorised no-password bypass.
-- The former `admin` name bypass has been removed.
+- The access page presents the same conventional name, course and password interface to every learner.
+- Special access behavior is intentionally not advertised in the learner-facing interface.
 - Course passwords are compared against distinct SHA-256 digests and are not stored.
 
 This remains a client-side access gate on a public static website. It discourages casual access but is not strong authentication because browser-side verification logic is downloadable with the public game.

@@ -9,6 +9,7 @@
     targets[next].focus();
   }
   document.addEventListener('keydown',event=>{
+    if(['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName)||event.target.isContentEditable)return;
     const overlay=visibleOverlay(),inMenu=!!overlay;
     if(inMenu&&['1','2','3','4'].includes(event.key)){
       const choices=[...overlay.querySelectorAll('.choice,.filetray,.rack,.package,.copy-card')].filter(item=>item.offsetParent!==null&&!item.classList.contains('used'));
@@ -27,7 +28,7 @@
     engine.game.keys[event.key]=true;engine.game.keys[event.key.toLowerCase()]=true;
     if((event.key==='e'||event.key==='E'||event.key===' ')&&!event.repeat)engine.interact()
   });
-  document.addEventListener('keyup',event=>{engine.game.keys[event.key]=false;engine.game.keys[event.key.toLowerCase()]=false});
+  document.addEventListener('keyup',event=>{if(['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName)||event.target.isContentEditable)return;engine.game.keys[event.key]=false;engine.game.keys[event.key.toLowerCase()]=false});
   const joystick=document.getElementById('joystick'),joystickKnob=document.getElementById('joystickKnob');let joystickPointer=null;
   function moveJoystick(event){
     if(event.pointerId!==joystickPointer)return;event.preventDefault();

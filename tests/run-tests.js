@@ -134,7 +134,8 @@ assert.ok(sessionSource.includes("'105':'a3778a955e2ecc")&&sessionSource.include
 assert.ok(sessionSource.includes("name.toUpperCase()==='FOLS'")&&!sessionSource.includes("name.toLowerCase()==='admin'"),'FOLS must be the only name-based bypass; the common admin bypass must be removed.');
 assert.ok(!sessionSource.includes('localStorage')&&!engineSource.includes('recordMissionStart')&&!html.includes('analyticsOverlay'),'Static analytics and browser-local persistence must be removed entirely.');
 assert.ok(!sessionSource.includes('peaceinkilling')&&!sessionSource.includes('Security@123'),'Administrator credentials must never be shipped in public client code.');
-assert.ok(html.includes('does not store or transmit names, IP addresses, device details, scores or usage analytics'),'The no-analytics privacy behavior must be disclosed to learners.');
+assert.ok(!html.includes('authorised no-password bypass')&&!html.includes('Privacy: this static edition'),'The access screen must read like a normal login without implementation or privacy notices.');
+assert.ok(mainSource.includes("['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName)"),'Gameplay keyboard shortcuts must not intercept typing or selecting in form controls.');
 
 console.log(`PASS: ${data.characters.length} Issue/Receipt roster entities validated.`);
 console.log(`PASS: ${data.transitions.length} declared transitions checked.`);
@@ -142,4 +143,4 @@ console.log(`PASS: ${result.warnings.length} unresolved source gaps remain.`);
 console.log('PASS: Issue and Receipt office layouts have distinct, in-bounds footprints.');
 console.log('PASS: Every mapped office has role, actions, situations, deviations, memory cue and source basis.');
 console.log('PASS: Full campaigns distinguish custody hand-offs from concurrent-branch focus switches.');
-console.log('PASS: Archive chronology, FOLS bypass and no-analytics privacy boundary validated.');
+console.log('PASS: Archive chronology and course-access boundary validated.');
