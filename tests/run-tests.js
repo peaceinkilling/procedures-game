@@ -75,6 +75,7 @@ assert.ok(uiSource.includes('updateRecordConsole')&&html.includes('id="recordCon
 assert.ok(html.includes('id="joystick"')&&mainSource.includes('engine.navigateToOffice(office.id)')&&engineSource.includes('autoNavigation'),'Mobile play must provide continuous joystick movement and tap-to-route.');
 assert.ok(uiSource.includes('Contingencies / situations')&&uiSource.includes('Normal route'),'Office entry must separate normal questions from source-backed contingencies.');
 assert.ok(html.includes('By <b>Sahil(105)</b>'),'Creator credit must remain visible in the persistent header.');
+assert.ok(/<h1>Depot Run: Issue & Receipt<\/h1>\s*<div class="creator-mark"/.test(html),'Creator credit must sit beneath the Depot Run heading, not consume a separate HUD column.');
 assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
 assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
 assert.strictEqual(Object.keys(data.documentProfiles).length,data.characters.length,'Every playable Issue/Receipt entity needs a document profile.');
@@ -84,9 +85,15 @@ for(const campaign of Object.values(data.campaigns))for(const stage of campaign.
 }
 for(const profile of Object.values(data.documentProfiles)){
   assert.ok(profile.preparedBy&&profile.creationAction&&profile.creatorSource,`${profile.id} must identify who creates/prepares it and cite that origin.`);
+  assert.ok(profile.frontEntries.length,`${profile.id} needs source-backed main-record or physical-custody detail.`);
   assert.ok(profile.frontEntries.every(entry=>entry.entry&&entry.filledBy&&entry.source),`${profile.id} front entries need content, responsibility and source.`);
+  assert.ok(profile.frontEntries.every(entry=>!entry.entry.includes('Lifecycle authority and copy-specific action')),`${profile.id} must not use generic placeholder entry text.`);
   assert.ok(profile.reverseEntries.every(entry=>entry.entry&&entry.filledBy&&entry.source),`${profile.id} reverse entries need content, responsibility and source.`);
 }
+assert.match(data.documentProfiles.scheduleOfIndents.preparedBy,/Demanding Unit|originating office/,'Schedule of Indents must be attributed to the originating demand, not invented as an ISS-created form.');
+assert.match(data.documentProfiles.irpsDuplicate.frontEntries.map(item=>item.entry).join(' '),/column 8.*column 9/i,'IRPS Duplicate must teach SDIC selection and packing progress columns.');
+assert.match(data.documentProfiles.drs1.frontEntries.map(item=>item.entry).join(' '),/RR\/PWB\/IB\/post receipt/i,'DRS must expose its source-defined transit-document entries.');
+assert.match(data.documentProfiles.rndorBulk.frontEntries.map(item=>item.entry).join(' '),/item-position suffix/i,'RN&DOR must expose its source-defined serial construction.');
 assert.ok(data.documentProfiles.iv6.reverseEntries.length>=4,'IV6 must teach its cited reverse-side time, DOC, packing and dispatch entries.');
 assert.ok(data.documentProfiles.receiptVoucher1.reverseEntries.some(entry=>entry.entry.includes('Receipt Time Check')),'RV1 must teach its reverse-side Receipt Time Check.');
 assert.ok(data.documentProfiles.drs3.reverseEntries.some(entry=>entry.entry.includes('Progress chart')),'DRS3 must teach its reverse-side progress chart.');

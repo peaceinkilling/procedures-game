@@ -390,7 +390,7 @@
       events:{
         ISS:{fields:['1','2','3','4'],note:'ISS opens the two-copy progress medium with demand identity and item count.'},
         ICR:{fields:['5','6','7'],note:'Issue Control allots and dates the depot control number; Original and Duplicate then split.'},
-        SDIC:{fields:[],note:'The Duplicate IRPS watches Sub-Depot execution. The printed form distinguishes SDIC from R&PS responsibility.'},
+        SDIC:{fields:['8','9'],note:'On the Duplicate IRPS, SDIC records the date of selection in column 8 and the date of packing in column 9.'},
         RPS:{fields:['8','9','10','11'],note:'R&PS marks receipt of No.5, No.6 and the returned acknowledgement copy; Remarks carries BY POST or N.A. when applicable.'}
       }
     },
@@ -480,7 +480,7 @@
   const assignOrigin=(ids,preparedBy,creationAction,source)=>ids.forEach(id=>documentOrigins[id]={preparedBy,creationAction,source});
   assignOrigin(['demand'],'Demanding Unit','Raises and signs the authorised demand/indent.','DGOSTI-002 paras 20–29 and 50–57, PDF pp.9–17');
   assignOrigin(['irpsOriginal','irpsDuplicate','issuesControlSheet'],'ISS','Prepares the IRPS in duplicate as the Issue progress medium.','DGOSTI-002 paras 28 and 66–70, PDF pp.10, 19–20');
-  assignOrigin(['scheduleOfIndents'],'ISS; completed by Issue Control Registry','ISS prepares the schedule/control medium; Issue Control enters the allotted depot control numbers.','DGOSTI-002 paras 51, 56 and 67–70, PDF pp.15–20');
+  assignOrigin(['scheduleOfIndents'],'Demanding Unit / originating office; completed by Issue Control Registry','The Schedule of Indents accompanies the demand into the depot; Issue Control enters the allotted depot control number against each listed indent.','DGOSTI-002 paras 22, 51, 56 and 67–70, PDF pp.9, 15–20');
   assignOrigin(['iv1','iv2','iv3','iv4','iv5','iv6'],'Voucher Preparation Section','Prepares and checks the six copy-specific Issue Vouchers from the controlled demand.','DGOSTI-002 paras 77–89, PDF pp.21–23');
   assignOrigin(['packingNoteOriginal','packingNoteDuplicate'],'Packing Section','Prepares one original/duplicate Packing Note set for each package.','DGOSTI-002 paras 142, 148 and 152–153, PDF pp.36–37');
   assignOrigin(['packingCompletionOriginal','packingCompletionDuplicate','collectionDocument'],'Packing Section','Prepares the Packing Completion Advice/collection evidence for hand-over to Traffic.','DGOSTI-002 paras 155–161, PDF pp.37–40');
@@ -507,10 +507,114 @@
   assignOrigin(['receiptedRv2'],'Consignor; receipt completed by authorised Sub-Depot/Group officer','The consignor originates RV2; the authorised receiving officer signs the cleared receipt copy before its return.','DGOSTI-001 Appendix D para 7(a), PDF pp.29–30');
   assignOrigin(['crvException'],'Receipts Area, in the presence of an officer','Prepares the CRV in triplicate when both prescribed Receipt Voucher copies are unavailable.','DGOSTI-001 Appendix E paras 5–6, PDF pp.31–32');
   assignOrigin(['ctcException'],'Receipts Progress Section','Makes the prescribed CTC copy/copies from the available Receipt Voucher when its companion copy is missing.','DGOSTI-001 Appendix D para 5(b), PDF p.28');
+  const frontEntrySets={};
+  const recordEntry=(entry,filledBy,source)=>({entry,filledBy,source});
+  const assignEntries=(ids,entries)=>ids.forEach(id=>frontEntrySets[id]=entries.map(item=>({...item})));
+  assignEntries(['demand'],[
+    recordEntry('Authorised demand identity, date, demanding unit, item particulars and quantities required.','Demanding Unit / competent signing authority','DGOSTI-002 paras 20–29 and 50–57, PDF pp.9–17'),
+    recordEntry('Depot date-and-time receipt mark; location-confirmation stamp for non-static units where applicable; checking initials/date and discrepancy remarks.','HQ Section; ULC; Indent Checking Section at their respective stages','DGOSTI-002 paras 20, 41, 50–57, PDF pp.9, 12, 15–17')
+  ]);
+  assignEntries(['irpsOriginal','irpsDuplicate','issuesControlSheet'],[
+    recordEntry('Columns 1–4: IRPS serial, unit, unit demand number/date and number of items.','Indent Sorting Section (ISS)','DGOSTI-002 para 28 and Appendix A, PDF pp.10, 56'),
+    recordEntry('Columns 5–7: Section, allotted depot control number and date.','Issue Control Registry','DGOSTI-002 paras 66–70 and Appendix A, PDF pp.19–20, 56'),
+    recordEntry('Progress columns: the Duplicate records selection in column 8 and packing in column 9; the Original is the R&PS progress/control copy for IV5, IV6, acknowledgement and remarks.','SDIC on the Duplicate; R&PS/CRS on the Original','DGOSTI-002 paras 95–96 and 210–214; Appendix A, PDF pp.25–26, 51–53, 56')
+  ]);
+  assignEntries(['scheduleOfIndents'],[
+    recordEntry('Indent/demand references listed for the originating batch; the schedule travels with the demanding documents.','Demanding Unit / originating office','DGOSTI-002 paras 22, 51 and 56, PDF pp.9, 15, 17'),
+    recordEntry('Allotted depot control number entered against each corresponding indent before return through Central Registry.','Issue Control Registry','DGOSTI-002 paras 67–70, PDF pp.19–20')
+  ]);
+  const issueVoucherFields=[
+    recordEntry('Depot/control identity, consignee address and station, demand nature and depot-receipt date, plus applicable static-unit/WET markings.','Voucher Preparation typist','DGOSTI-002 paras 80–84, PDF pp.21–22'),
+    recordEntry('Item particulars and quantities transcribed from the controlled demand; typist and checker initial/date evidence.','Voucher Preparation typist and checker','DGOSTI-002 paras 85–88, PDF pp.22–23')
+  ];
+  const issueCopyEntries={
+    iv1:recordEntry('Copy 1 is the consignee/Traffic advice copy and later carries the Packing Note reference on its reverse.','Voucher Preparation; Packing and Traffic add later evidence','DGOSTI-002 paras 152, 159 and 165–176, PDF pp.37, 40–44'),
+    iv2:recordEntry('Copy 2 is placed in Package No.1 and becomes the consignee-signed returned acknowledgement.','Packing Section; consignee completes receipt','DGOSTI-002 para 147, PDF p.36; RAOS Part II para 190(q), PDF p.85'),
+    iv3:recordEntry('Copy 3 carries selection particulars and accompanies the accounting/LAO evidence path; part issues carry guard-sheet linkage.','Selection; SDIC adds guard-sheet evidence where applicable','DGOSTI-002 paras 95 and 121–127, PDF pp.25, 32–33'),
+    iv4:recordEntry('Copy 4 carries selection particulars, Packing receipt evidence and CAB account-posting reference, initials and dates.','Selection; Packing; CAB ledger poster and checker','DGOSTI-002 paras 127, 141 and 194–199, PDF pp.33, 36, 48–49'),
+    iv5:recordEntry('Copy 5 follows packing completion to R&PS; Packing endorses the Packing Note serial block.','Packing Section','DGOSTI-002 paras 152 and 154, PDF p.37'),
+    iv6:recordEntry('Copy 6 is the time-check/control copy: issue-time, selection/packing, location, Traffic custody and despatch evidence accumulate on it.','Voucher Preparation, SDIC, DOC, Packing and Traffic at their respective stages','DGOSTI-002 paras 87, 91, 105, 141, 152, 155 and 161–190, PDF pp.22–46')
+  };
+  Object.keys(issueCopyEntries).forEach(id=>frontEntrySets[id]=[...issueVoucherFields,issueCopyEntries[id]]);
+  assignEntries(['packingNoteOriginal','packingNoteDuplicate'],[
+    recordEntry('One serially controlled IAFZ-3031 Packing Note is prepared in duplicate for each package; it records the package contents and is signed by the packer and witness.','Packing Section packer and witness','DGOSTI-002 paras 142, 148 and 152–153, PDF pp.36–37'),
+    recordEntry('For small arms, registered numbers are also recorded on the Packing Note.','Packing Section','DGOSTI-002 para 144(a), PDF p.36')
+  ]);
+  assignEntries(['packingCompletionOriginal','packingCompletionDuplicate','collectionDocument'],[
+    recordEntry('Serially numbered advice listing IV1 control/Sub-Depot serial numbers in strict numerical sequence and separated by series.','Packing Section','DGOSTI-002 para 155, PDF pp.37–38'),
+    recordEntry('Traffic representative signs for IV1/document receipt and signs, dates and records collection time on the retained evidence.','Traffic representative','DGOSTI-002 paras 156, 159 and 161, PDF pp.38–40')
+  ]);
+  assignEntries(['roadTransit','railTransit','postalTransit','localIssueTransit','convoyDocument'],[
+    recordEntry('Applicable despatch mode, carrier/vehicle or postal evidence, package custody and despatch reference are recorded for the route actually used.','Traffic Branch / relevant Traffic section','DGOSTI-002 paras 163–192, PDF pp.40–46'),
+    recordEntry('This training profile does not invent a universal field layout: the exact carrier or convoy form governs its own entries.','Issuing Traffic clerk / carrier authority as applicable','DGOSTI-002 paras 170–190, PDF pp.42–46')
+  ]);
+  assignEntries(['railwayReceipt','parcelWayBill'],[
+    recordEntry('Carrier-issued railway receipt/parcel waybill number and date, linked to the relevant voucher and wagon/package despatch.','Railway/carrier authority; Traffic records the reference','DGOSTI-002 paras 173–176, PDF p.43')
+  ]);
+  assignEntries(['trafficRegister'],[
+    recordEntry('Columns 1–6: control number, stores-collection date, IV1-to-consignee date, stores-despatch date, wagon/RR or postal reference, and remarks.','Traffic Branch Issues Section','DGOSTI-002 paras 164 and 176–180; Appendix B, PDF pp.40, 43–44, 57')
+  ]);
+  assignEntries(['localIssueRegister'],[
+    recordEntry('Columns 1–3 are opened on receipt of the stores/vouchers; column 4 records IV1 sent as collection authority; the authorised representative signs the receipt column.','Traffic Local Issues Section and authorised consignee representative','DGOSTI-002 paras 187–190; Appendix C, PDF pp.45–46, 58')
+  ]);
+  assignEntries(['postalIssueRegister'],[
+    recordEntry('Postal/economy-package receipt and despatch evidence is maintained in the prescribed register; postal parcel number/date also updates the Traffic Register.','Economy Packing & Postal Issue Section','DGOSTI-002 paras 176 and 182–185; Appendix E, PDF pp.43–45, 60')
+  ]);
+  assignEntries(['stores','receiptStoresBulk','receiptStoresDuesOut'],[
+    recordEntry('Physical stores are not a form: the game shows their designation, quantity, condition and current custody only when supported by the accompanying documents.','Selector / Receipts Area / receiving store representative at the current hand-off','DGOSTI-002 paras 121–162, PDF pp.32–40; DGOSTI-001 Appendix E, PDF pp.31–35')
+  ]);
+  assignEntries(['eachPackage','packageOneWithIv2'],[
+    recordEntry('Physical package markings include consignee/destination, weight, voucher number and individual/total package number; Package No.1 contains IV2.','Packing Section','RAOS Part II paras 247–248, PDF pp.106–107; DGOSTI-002 para 147, PDF p.36')
+  ]);
+  assignEntries(['accountCardPosting','receiptAccountPosting'],[
+    recordEntry('Account reference, ledger-poster initials/date and checker initials/date provide the posting trail against the governing voucher.','CAB ledger poster and ledger checker','DGOSTI-002 paras 197–199, PDF pp.48–49; DGOSTI-001 Appendix O paras 2–5, PDF pp.51–53')
+  ]);
+  assignEntries(['binCardSelection','binCardReceipt'],[
+    recordEntry('Quantity issued or received, transaction reference and resulting balance are posted on the relevant Bin Card.','Selection Shed selector / receiving Store representative as applicable','DGOSTI-002 paras 128–131, PDF pp.33–34; DGOSTI-001 Appendix M, PDF pp.47–48')
+  ]);
+  assignEntries(['receiptedAcknowledgement'],[
+    recordEntry('IV2 receipt acknowledgement: stores/package checked, then signed and dated by the consignee before return for R&PS control.','Consignee / authorised recipient','RAOS Part II para 190(q), PDF p.85; DGOSTI-002 paras 210–213, PDF pp.51–52')
+  ]);
+  assignEntries(['unitPadBundle'],[
+    recordEntry('Demand, linked returned voucher copies and IRPS progress evidence are cross-linked and filed in the correct unit pad.','R&PS/CRS Unit Pad Registry','DGOSTI-002 paras 210–214, PDF pp.51–53')
+  ]);
+  assignEntries(['advanceIssueVoucher','receiptVoucher1','receiptVoucher2'],[
+    recordEntry('Consignor issue-voucher identity, date, consignee, item particulars and despatch quantities originate at the consignor.','Consignor','DGOSTI-001 broad principles para 2 and Appendices A–D, PDF pp.7–13, 25–30'),
+    recordEntry('Receiving depot adds DRS number/date, receipt control number/date and the RN&DOR-prepared stamp/date at their prescribed stages.','Receipts Progress/Control/Liaison sections at their respective stages','DGOSTI-001 Appendices D, F and G, PDF pp.27–30, 36–40')
+  ]);
+  assignEntries(['drs1','drs2','drs3'],[
+    recordEntry('Sub-Depot/Group, DRS serial/date, RR/PWB/IB/post receipt number/date, consignor and station, convoy/consignor IV reference, wagon/vehicle, packages and description.','Traffic Receipts','DGOSTI-001 Appendix C paras 7–9, PDF pp.20–24'),
+    recordEntry('Receipt control numbers and DIS/CRV linking remarks are added as the receipts are controlled and cleared.','Receipt Control / Receipts Progress at the prescribed stage','DGOSTI-001 Appendices C, D and G, PDF pp.20–30, 39–40')
+  ]);
+  assignEntries(['rcrs1','rcrs2','rcrs3'],[
+    recordEntry('Columns 1–6: receipt control number, consignor, consignor IV number/date and DRS number/date; Remarks records CRV or CTC when applicable.','Receipt Control Registry','DGOSTI-001 Appendix G para 2(d), PDF pp.39–40'),
+    recordEntry('Columns 7–8 are milestone dates completed by the office responsible for voucher distribution, receipt in Accounts, return to consignor and CAB posting.','Receipts Progress, CAB and R&PS/CRS at their respective milestones','DGOSTI-001 Appendices D, G and O, PDF pp.25–30, 39–40, 51–53')
+  ]);
+  assignEntries(['rndorBulk','rndorDuesOut'],[
+    recordEntry('Receipt-control-derived serial with item-position suffix, total items, shed/area location, preparer signature, number of copies and checker initials.','Receipt Liaison preparer and checker','DGOSTI-001 Appendix F paras 4–5, PDF pp.36–38'),
+    recordEntry('Copy count and distribution reflect the actual Bulk/Detail/Dues-out destinations; an extra copy is made for each additional location.','Receipt Liaison Section','DGOSTI-001 Appendix F para 4, PDF pp.36–37')
+  ]);
+  assignEntries(['discrepancyReport'],[
+    recordEntry('DR number, receipt/control and voucher references, item discrepancy, Receipts Area location and custody evidence.','Receipts Discrepancy clerk; I/C Receipts Area signs custody evidence','DGOSTI-001 Appendix N para 2, PDF p.49')
+  ]);
+  assignEntries(['adjustmentVoucher'],[
+    recordEntry('IAFO-2715 adjustment voucher in quadruplicate, cross-referenced to the DR and allotted DAO adjustment control number.','Receipts Discrepancy clerk; DAO allots the control number','DGOSTI-001 Appendix N para 2(d), PDF p.49')
+  ]);
+  assignEntries(['receiptedRv2'],[
+    recordEntry('Receipt control and clearance evidence culminate in the authorised Sub-Depot/Group officer signature before RV2 returns to the consignor.','Receipt Control/Progress entries; authorised receiving officer signs receipt','DGOSTI-001 Appendix D para 7(a), PDF pp.29–30')
+  ]);
+  assignEntries(['crvException'],[
+    recordEntry('Consignor and address; RR/PWB/convoy/IB/post receipt; wagon/vehicle; DRS; consignor IV if available; package markings and weights; Packing Notes; escort signature.','Receipts Area in the presence of an officer','DGOSTI-001 Appendix E paras 5–6, PDF pp.31–32'),
+    recordEntry('Prepared in triplicate only when both normal Receipt Voucher copies are unavailable; later regular-voucher linking must prevent double posting.','Receipts Area / Receipts Progress / CAB at their prescribed stages','DGOSTI-001 Appendices D–E, PDF pp.25–32')
+  ]);
+  assignEntries(['ctcException'],[
+    recordEntry('Certified True Copy reproduces the available Receipt Voucher and is boldly identified as Copy 1 or Copy 2 for the missing companion copy.','Receipts Progress Section','DGOSTI-001 Appendix D para 5(b), PDF p.28'),
+    recordEntry('Receipt control number links the travelling and trap copies; the trap is destroyed on prescribed later-voucher linkage or after the stated retention period.','Receipt Control and Receipts Progress','DGOSTI-001 Appendix D para 5(b), PDF p.28')
+  ]);
   const documentProfiles=Object.fromEntries(characters.map(character=>[character.id,{
     id:character.id,procedure:character.procedure,title:character.name,copyPurpose:character.finalDisposition,
     preparedBy:documentOrigins[character.id].preparedBy,creationAction:documentOrigins[character.id].creationAction,creatorSource:documentOrigins[character.id].source,
-    route:character.route,frontEntries:[{entry:`Lifecycle authority and copy-specific action follow the verified ${character.name} route.`,filledBy:'Current responsible office shown in the stage ledger',source:character.primarySourceRefs.join('; ')}],
+    route:character.route,frontEntries:frontEntrySets[character.id],
     reverseEntries:reverseSideEntries[character.id]||[],
     source:character.primarySourceRefs.join('; ')
   }]));
