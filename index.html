@@ -29,7 +29,6 @@
     <nav class="command-nav" aria-label="Game sections">
       <button class="nav-command" id="archiveBtn" type="button"><span>ARCHIVE</span><b>Sections & Documents</b></button>
       <button class="nav-command" id="hangarBtn" type="button"><span>MISSIONS</span><b>Character Hangar</b></button>
-      <button class="nav-command hidden" id="analyticsBtn" type="button"><span>ADMIN</span><b>Analytics & Export</b></button>
       <div class="session-chip" id="sessionChip">Access verification required</div>
     </nav>
 
@@ -118,7 +117,7 @@
       <div class="access-emblem">◈</div>
       <div class="intel-kicker">DEPOT RUN · CONTROLLED LEARNING ACCESS</div>
       <h2>Identify your training session</h2>
-      <p class="lead">Enter your name and course. The access password is checked only for the selected course and is never written to the activity record.</p>
+      <p class="lead">Enter your name and course. Entering FOLS as the name uses the authorised no-password bypass.</p>
       <label class="field">Name
         <input class="select" id="playerName" name="playerName" autocomplete="name" maxlength="80" required placeholder="Your full name">
       </label>
@@ -131,7 +130,7 @@
       <label class="field" id="passwordField">Course password
         <input class="select" id="coursePassword" name="coursePassword" type="password" autocomplete="current-password" required placeholder="Enter course password">
       </label>
-      <div class="access-notice">This static edition keeps activity only in this browser until an administrator exports it. It does not transmit names to GitHub or any remote server.</div>
+      <div class="access-notice">Privacy: this static edition does not store or transmit names, IP addresses, device details, scores or usage analytics.</div>
       <div class="feedback hidden" id="accessFeedback" aria-live="polite"></div>
       <button class="btn primary access-submit" type="submit">Enter Procedures Game</button>
     </form>
@@ -157,23 +156,6 @@
       </div>
       <div class="archive-breadcrumb" id="archiveBreadcrumb">Archive / Sections & Branches</div>
       <div class="archive-content" id="archiveContent" aria-live="polite"></div>
-    </div>
-  </div>
-
-  <div class="overlay hidden" id="analyticsOverlay">
-    <div class="modal analytics-modal">
-      <div class="archive-top">
-        <div><div class="intel-kicker">LOCAL ADMIN CONSOLE</div><h2>Usage Analytics & Diagnostics</h2><p class="lead">Records held in this browser only. Admin sessions are excluded.</p></div>
-        <button class="btn" id="analyticsClose" type="button">Return to Game</button>
-      </div>
-      <div class="analytics-summary" id="analyticsSummary"></div>
-      <div class="analytics-actions">
-        <button class="btn primary" id="exportCsvBtn" type="button">Download private CSV</button>
-        <button class="btn" id="exportJsonBtn" type="button">Download JSON backup</button>
-        <button class="btn danger" id="clearAnalyticsBtn" type="button">Clear this browser’s records</button>
-      </div>
-      <div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Name</th><th>Course</th><th>Activity</th><th>Procedure / mode</th><th>Score</th><th>Timing</th><th>Diagnostics</th></tr></thead><tbody id="analyticsRows"></tbody></table></div>
-      <div class="access-notice">Centralized records from other devices are not available in a static GitHub Pages site. A private authenticated backend is required for cross-device collection.</div>
     </div>
   </div>
 
@@ -220,7 +202,7 @@
       <input type="hidden" id="roleSelect" value="iv1">
       <div class="start-row">
         <div class="review-key"><span class="status-dot approved"></span> Source-reviewed and playable <span class="status-dot legacy"></span> Qualified ruling with disclosed source anomaly</div>
-        <div><button class="btn hidden" id="hangarAnalyticsBtn" type="button">Open Admin Analytics</button> <button class="btn" id="hangarArchiveBtn" type="button">Open Procedure Archive</button> <button class="btn primary" id="startBtn" type="button">Start Character Run</button></div>
+        <div><button class="btn" id="hangarArchiveBtn" type="button">Open Procedure Archive</button> <button class="btn primary" id="startBtn" type="button">Start Character Run</button></div>
       </div>
     </div>
   </div>
@@ -242,7 +224,7 @@
   <script src="src/map.js"></script>
   <script src="src/ui.js"></script>
   <script src="src/engine.js?v=20260726-2"></script>
-  <script src="src/session.js?v=20260726-3"></script>
+  <script src="src/session.js?v=20260726-4"></script>
   <script src="src/archive.js?v=20260726-2"></script>
   <script src="src/main.js"></script>
   <script src="src/smoke-runner.js"></script>

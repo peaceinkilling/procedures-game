@@ -39,7 +39,7 @@
     }
   }
   function openDetail(id){
-    detail=id;root.DepotSession?.recordArchiveView(section,id,procedure);
+    detail=id;
     try{render()}catch(error){byId('archiveContent').innerHTML=`${backButton()}<div class="feedback">Archive page could not be rendered: ${esc(error.message)}</div>`;bindBack();console.error(error)}
   }
   const backButton=()=>'<button class="btn archive-back" id="archiveBack" type="button">← Back to Archive</button>';
@@ -104,7 +104,7 @@
     byId('archiveOverlay').classList.remove('hidden');render();
   }
   function close(){byId('archiveOverlay').classList.add('hidden');if(archiveWasRunning&&root.DepotEngine?.game?.running)root.DepotEngine.game.paused=false}
-  function openDocument(id){section='documents';detail=id;root.DepotSession?.recordArchiveView(section,id,procedure);render()}
+  function openDocument(id){section='documents';detail=id;render()}
   function initialize(){
     byId('archiveBtn').addEventListener('click',open);byId('hangarArchiveBtn').addEventListener('click',open);byId('archiveClose').addEventListener('click',close);
     byId('archiveOfficesTab').addEventListener('click',()=>{section='offices';detail=null;render()});
@@ -117,7 +117,7 @@
       if(documentButton){openDetail(documentButton.dataset.document);return}
       if(jumpButton){section='documents';detail=jumpButton.dataset.jumpDocument;render()}
     });
-    byId('hangarBtn').addEventListener('click',()=>{byId('archiveOverlay').classList.add('hidden');byId('analyticsOverlay').classList.add('hidden');if(root.DepotEngine?.game?.running)root.DepotEngine.quitGame();else byId('startOverlay').classList.remove('hidden')});
+    byId('hangarBtn').addEventListener('click',()=>{byId('archiveOverlay').classList.add('hidden');if(root.DepotEngine?.game?.running)root.DepotEngine.quitGame();else byId('startOverlay').classList.remove('hidden')});
   }
   root.DepotArchive={open,close,render,openDetail,openDocument};initialize();
 })(globalThis);

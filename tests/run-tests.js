@@ -109,10 +109,10 @@ for(const procedure of ['Issue','Receipt'])for(const officeId of data.mapOfficeI
 assert.ok(html.includes('id="loginOverlay"')&&html.includes('id="playerName"')&&html.includes('id="playerCourse"')&&html.includes('id="coursePassword"'),'Course access gate must collect name, course and password.');
 assert.ok(!sessionSource.includes('bom#105')&&!sessionSource.includes('bom#106'),'Course passwords must not be stored as plaintext in the shipped session module.');
 assert.ok(sessionSource.includes("'105':'a3778a955e2ecc")&&sessionSource.includes("'106':'317ed5868abccec"),'BOM 105 and BOM 106 password digests must remain distinct.');
-assert.ok(sessionSource.includes("name.toLowerCase()==='admin'")&&sessionSource.includes('if(!current||current.admin)return'),'Admin name bypass must work and admin activity must be excluded from logging.');
-assert.ok(sessionSource.includes('localStorage')&&sessionSource.includes('Download private CSV')===false&&html.includes('Download private CSV'),'Static analytics must use local browser storage and provide admin export.');
-assert.ok(engineSource.includes('recordMissionStart')&&engineSource.includes('recordStep')&&engineSource.includes('recordMistake')&&engineSource.includes('recordMissionEnd'),'Mission analytics must cover usage, control points, diagnostics, timing and scores.');
-assert.ok(html.includes('does not transmit names to GitHub or any remote server'),'The static analytics limitation must be disclosed to learners.');
+assert.ok(sessionSource.includes("name.toUpperCase()==='FOLS'")&&!sessionSource.includes("name.toLowerCase()==='admin'"),'FOLS must be the only name-based bypass; the common admin bypass must be removed.');
+assert.ok(!sessionSource.includes('localStorage')&&!engineSource.includes('recordMissionStart')&&!html.includes('analyticsOverlay'),'Static analytics and browser-local persistence must be removed entirely.');
+assert.ok(!sessionSource.includes('peaceinkilling')&&!sessionSource.includes('Security@123'),'Administrator credentials must never be shipped in public client code.');
+assert.ok(html.includes('does not store or transmit names, IP addresses, device details, scores or usage analytics'),'The no-analytics privacy behavior must be disclosed to learners.');
 
 console.log(`PASS: ${data.characters.length} Issue/Receipt roster entities validated.`);
 console.log(`PASS: ${data.transitions.length} declared transitions checked.`);
@@ -120,4 +120,4 @@ console.log(`PASS: ${result.warnings.length} unresolved source gaps remain.`);
 console.log('PASS: Issue and Receipt office layouts have distinct, in-bounds footprints.');
 console.log('PASS: Every mapped office has role, actions, situations, deviations, memory cue and source basis.');
 console.log('PASS: Full campaigns distinguish custody hand-offs from concurrent-branch focus switches.');
-console.log('PASS: Archive chronology, course access and local-only admin analytics validated.');
+console.log('PASS: Archive chronology, FOLS bypass and no-analytics privacy boundary validated.');

@@ -1,4 +1,4 @@
-# Archive, Access and Analytics Design
+# Archive and Access Design
 
 ## Archive
 
@@ -11,34 +11,43 @@ The blank document view is explicitly described as a schematic learning template
 
 ## Course access
 
-- BOM 105 uses the supplied BOM 105 course password.
-- BOM 106 uses the supplied BOM 106 course password.
-- Entering `admin` as the name activates the requested bypass, does not require a course password and is excluded from activity logging.
-- Course passwords are compared against SHA-256 digests and are never stored in analytics records.
+- BOM 105 and BOM 106 use their supplied course passwords.
+- Entering `FOLS` as the name activates the authorised no-password bypass.
+- The former `admin` name bypass has been removed.
+- Course passwords are compared against distinct SHA-256 digests and are not stored.
 
-This is a client-side access gate on a public static website. It discourages casual access but is **not strong authentication**: all browser-side verification logic is downloadable with the public game. Strong access control requires a server-side identity provider.
+This remains a client-side access gate on a public static website. It discourages casual access but is not strong authentication because browser-side verification logic is downloadable with the public game.
 
-## Current analytics scope
+## Analytics decision
 
-The GitHub Pages deployment is static and cannot accept private writes. The current build therefore:
+Analytics have been removed entirely from the static edition:
 
-- records player name, course, session start, archive use, mission selection, mode, role, control points, mistakes, completion, score and timing in that browser's `localStorage`;
-- excludes administrator sessions;
-- never records the course password;
-- exposes the local analytics console only during an admin-bypass session;
-- exports a CSV or JSON file for private retention by the administrator;
-- clearly tells learners that the static edition does not transmit their name to a remote service.
+- no player name is persisted;
+- no score, timing, route or mistake event is persisted;
+- no IP address or device detail is collected;
+- no browser-local analytics table or export file remains;
+- no administrator credential is included in public source code.
 
-Records created on one learner's phone do not appear on the administrator's device. GitHub Pages also cannot write a shared “other file” in the repository.
+The GitHub Pages deployment cannot accept private writes. A centralized owner-only analytics system requires a separately authorized backend account.
 
-## Required next step for centralized private analytics
+## Suitable future backend
 
-A cross-device system requires an authenticated write API and a private database. The storage adapter in `src/session.js` isolates record creation so it can later send the same event schema to such an endpoint. Before enabling remote collection, the owner must select the hosting/database provider and approve:
+The assessed design is a Cloudflare Worker with a D1 SQL database:
 
-- who may read learner names;
-- retention and deletion periods;
-- learner notice/consent wording;
-- administrator authentication stronger than the name-only bypass;
-- encryption, access logs and backup policy.
+- the Worker verifies course and administrator credentials using encrypted Worker secrets;
+- D1 stores the approved analytics schema;
+- the Worker can obtain the request IP and limited request metadata server-side;
+- CORS can be restricted to the Procedures Game origin;
+- the administrator receives an authenticated, expiring session before any analytics query;
+- retention and deletion controls can be enforced centrally.
 
-No external analytics service or public write endpoint has been silently added.
+No Cloudflare account, API token, Worker project or D1 database is available in the current workspace. Therefore the backend was not provisioned and the supplied administrator password was not written to the repository.
+
+If a backend is authorized later, collection should be disclosed to learners and limited to necessary fields. Exact device fingerprinting should not be introduced merely to make a device more identifiable.
+
+Official implementation references:
+
+- [Cloudflare Worker secrets](https://developers.cloudflare.com/workers/configuration/secrets/)
+- [Cloudflare D1 getting started](https://developers.cloudflare.com/d1/get-started/)
+- [Worker request metadata](https://developers.cloudflare.com/workers/runtime-apis/request/)
+- [Binding Workers to databases](https://developers.cloudflare.com/workers/databases/connecting-to-databases/)
