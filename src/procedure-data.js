@@ -365,6 +365,23 @@
   const campaignTransitions=Object.entries(campaigns).flatMap(([campaignId,campaign])=>campaign.route.slice(0,-1).map((from,index)=>({id:`${campaignId}:${index}:${from}->${campaign.route[index+1]}`,characterId:campaignId,from,to:campaign.route[index+1],support:'primary-supported',handoffType:campaign.stages[index].handoffToNext,primarySourceRef:campaign.primarySourceRefs.join('; '),domainReview:false})));
   const variantTransitions=receiptRouteVariants.receiptVoucher1NoDuesOut.slice(0,-1).map((from,index)=>({id:`receiptVoucher1:no-dues:${index}:${from}->${receiptRouteVariants.receiptVoucher1NoDuesOut[index+1]}`,characterId:'receiptVoucher1',from,to:receiptRouteVariants.receiptVoucher1NoDuesOut[index+1],support:'primary-supported',primarySourceRef:'DGOSTI-001 Appendices F, G, J, K and O (PDF pp.36–53)',domainReview:false}));
   const transitions=[...routeTransitions,...campaignTransitions,...variantTransitions];
+  const officeSituations={
+    Receipt:{
+      ReceiptArea:{
+        normal:{title:'Normal receipt checking',description:'Check designation, quantity and condition, then continue the currently active normal Receipt route.'},
+        contingencies:[
+          {role:'discrepancyReport',title:'Discrepancy discovered',description:'Shortage, surplus, damage, change in condition or change of designation requires the separate DR and adjustment-document trail.',source:'DGOSTI-001 Appendices N–P (PDF pp.49–55)'},
+          {role:'crvException',title:'Stores received without vouchers',description:'Open the controlled CRV lifecycle in triplicate and progress the regular voucher without posting the stores twice.',source:'DGOSTI-001 Appendix D paras 3, 5(c), 7 and Appendix Q para 5 (PDF pp.25–30, 57–58)'}
+        ]
+      },
+      ReceiptProgress:{
+        normal:{title:'Normal document linkage',description:'Continue linking and progressing the normal RV, DRS and RCRS evidence.'},
+        contingencies:[
+          {role:'ctcException',title:'RV No.1 missing; RV No.2 available',description:'Convert RV2 to RV1, prepare the two CTC copies, retain the trap copy and continue the prescribed controlled route.',source:'DGOSTI-001 Appendix D paras 3(b), 5(b), 7; Appendix G para 2; Appendix Q para 5 (PDF pp.26, 28–30, 39, 57–58)'}
+        ]
+      }
+    }
+  };
   const formSchemas={
     irps:{
       procedure:'Issue',title:'Issue Registration Progress Sheet (IRPS)',format:'Two copies: Original is the R&PS/CRS progress medium; Duplicate supports SDIC execution progress.',copy:'ORIGINAL / DUPLICATE',
@@ -412,7 +429,7 @@
   return {
     procedure:'Issue and Receipt',
     receiptImplemented:true,
-    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,formSchemas,formByRole,
+    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,officeSituations,formSchemas,formByRole,
     roleInfo:legacy,
     mapOfficeIds:{Issue:['DemandingUnit','HQ','ISS','ULC','IndentChecking','ICR','VoucherPrep','SDIC','DOC','MLRS','Selection','Packing','Traffic','CentralRegistry','CAB','SM','RPS','LAO'],Receipt:['Consignor','CentralRegistry','Provision','TrafficReceipts','ReceiptProgress','ReceiptArea','ReceiptLiaison','ReceiptControl','MLRS','DOC','FPVRelease','DuesOutSuspense','BulkStore','Packing','ReceiptDiscrepancy','DAO','CAB','RPS']},
     sourcePolicy:{primary:['RAOS Part II','DGOSTI-002','DGOSTI-001'],providedPrimaryExtracts:true,sourceMap:'docs/PROCEDURE_SOURCE_MAP.md'}

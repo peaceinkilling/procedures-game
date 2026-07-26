@@ -26,6 +26,19 @@ assert.ok(data.formSchemas.rcrs.events.ReceiptControl.fields.every(field=>Number
 assert.deepStrictEqual(data.formSchemas.rcrs.events.CAB.fields,['7','8'],'CAB must show RCRS columns 7 then 8.');
 assert.deepStrictEqual(data.formSchemas.irps.columns.map(column=>column[0]),['1','2','3','4','5','6','7','8','9','10','11'],'IRPS must reproduce all eleven printed columns.');
 assert.ok(data.formSchemas.trafficDrs&&data.formSchemas.subDepotDrs&&data.formSchemas.trafficIssue,'All DGOSTI register twins must be present.');
+for(const [procedure,offices] of Object.entries(data.officeSituations)){
+  for(const [officeId,situations] of Object.entries(offices)){
+    assert.ok(data.mapOfficeIds[procedure].includes(officeId),`${procedure} situation gate references unknown office ${officeId}.`);
+    assert.ok(situations.normal?.title&&situations.normal?.description,`${officeId} needs a clearly labelled normal route.`);
+    assert.ok(situations.contingencies.length,`${officeId} situation gate needs at least one contingency.`);
+    for(const contingency of situations.contingencies){
+      const character=data.characters.find(item=>item.id===contingency.role);
+      assert.ok(character?.playable&&character.procedure===procedure,`${officeId} contingency ${contingency.role} must reference a playable character.`);
+      assert.strictEqual(character.route[0],officeId,`${contingency.role} must begin at the office where it is offered.`);
+      assert.ok(contingency.source&&contingency.description,`${contingency.role} needs a source and procedural trigger.`);
+    }
+  }
+}
 
 for(const procedure of ['Issue','Receipt']){
   const offices=data.mapOfficeIds[procedure].map(id=>Object.assign({},data.offices.find(item=>item.id===id),data.mapLayouts[procedure]?.[id]||{}));
@@ -55,10 +68,12 @@ assert.ok(missionIndex>-1&&missionIndex<layoutIndex&&layoutIndex<canvasIndex,'Mi
 assert.ok(!/<div class="canvas-wrap">[\s\S]*class="compass"/.test(html),'Compass must not be inside the playable canvas wrapper.');
 assert.ok(html.indexOf('id="officeIntelCard"')>canvasIndex,'Office intelligence must remain outside the playable canvas.');
 assert.ok(/speed:3[6-9]\d/.test(engineSource),'Base character speed must remain at least 360 map units per second.');
-assert.ok(mainSource.includes("map.canvas.addEventListener('click'")&&mainSource.includes('ui.showOfficeIntel'),'Canvas office clicks must open the structured office dossier.');
+assert.ok(mainSource.includes("map.canvas.addEventListener('pointerup'")&&mainSource.includes('ui.showOfficeIntel'),'Pointer office selection must preserve the structured office dossier.');
 assert.ok(mapSource.includes("building(game.route[game.index],game.procedure)")&&uiSource.includes("map.building(game.route[game.index],game.procedure)"),'Receipt guidance arrows and compass must use the active procedure layout.');
 assert.ok(mainSource.includes("['1','2','3','4'].includes(event.key)")&&mainSource.includes("event.key==='i'"),'Every graded choice and nearest-office intelligence must be keyboard accessible.');
 assert.ok(uiSource.includes('updateRecordConsole')&&html.includes('id="recordConsole"'),'The live progressive document twin must remain outside the map.');
+assert.ok(html.includes('id="joystick"')&&mainSource.includes('engine.navigateToOffice(office.id)')&&engineSource.includes('autoNavigation'),'Mobile play must provide continuous joystick movement and tap-to-route.');
+assert.ok(uiSource.includes('Contingencies / situations')&&uiSource.includes('Normal route'),'Office entry must separate normal questions from source-backed contingencies.');
 
 console.log(`PASS: ${data.characters.length} Issue/Receipt roster entities validated.`);
 console.log(`PASS: ${data.transitions.length} declared transitions checked.`);

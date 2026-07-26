@@ -42,18 +42,21 @@
           <div class="flash" id="flash"></div>
         </div>
         <div class="game-controls">
-          <div>
+          <div class="desktop-controls">
             <button class="btn primary" id="interactBtn" type="button">Interact / E</button>
             <button class="btn" id="boostBtn" type="button">Boost / Shift</button>
             <button class="btn" id="soundBtn" type="button">Sound: On</button>
             <button class="btn danger" id="quitBtn" type="button">Quit Mission</button>
           </div>
           <div class="touch" aria-label="Touch controls">
-            <button class="up" data-key="ArrowUp" type="button">▲</button>
-            <button class="left" data-key="ArrowLeft" type="button">◀</button>
-            <button class="down" data-key="ArrowDown" type="button">▼</button>
-            <button class="right" data-key="ArrowRight" type="button">▶</button>
-            <button class="act" id="touchAct" type="button">ACTION</button>
+            <div class="joystick" id="joystick" role="application" aria-label="Drag in any direction to move continuously">
+              <div class="joystick-ring"></div><div class="joystick-knob" id="joystickKnob"></div>
+            </div>
+            <div class="touch-actions">
+              <button class="act" id="touchAct" type="button">ENTER OFFICE</button>
+              <button class="touch-intel" id="touchIntel" type="button">OFFICE INFO</button>
+            </div>
+            <p>Drag the stick continuously, or tap an office on the map to auto-run and enter it.</p>
           </div>
         </div>
       </section>

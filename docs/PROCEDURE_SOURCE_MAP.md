@@ -46,6 +46,15 @@ The corrected Receipt character routes also preserve:
 - Receipt Liaison's courier role between Receipts Progress, Receipt Control and Receipts Area for RV2 and DRS2.
 - The discrepancy report's return from DAO to the Sub-Depot discrepancy section for stores clearance before the completed case returns through DAO to the consignor.
 
+## Office-entry situation gates
+
+Normal questions remain the default path. At offices where the supplied primary procedure establishes a complete playable exception, the learner may deliberately switch to that full lifecycle:
+
+- Receipt Area offers the Discrepancy Report route from DGOSTI-001 Appendices N–P and the stores-without-vouchers CRV route from Appendix D and Appendix Q.
+- Receipts Progress offers the missing-RV1/available-RV2 CTC route from Appendix D, Appendix G and Appendix Q.
+
+Each contingency begins at the office where it is offered and replaces the current exercise with the already validated character route. The selector does not splice an exception into an unrelated document route or create a shortcut back to normal receipt.
+
 ## Enforcement
 
 `npm test` rejects duplicate IDs, unknown/unreachable offices, missing routes or endings, undeclared transitions, uncited approved transitions, incomplete campaign stages, unlabelled concurrent-branch switches, and guessed routes on locked characters.
