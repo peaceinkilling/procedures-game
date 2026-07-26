@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Depot Run — Issue & Receipt Procedures</title>
+  <title>Procedures Game — Issue & Receipt</title>
   <link rel="stylesheet" href="src/styles.css">
 </head>
 <body>
@@ -23,6 +23,7 @@
         <div class="stat"><span>Lives</span><b id="lives">♥♥♥</b></div>
         <div class="stat speed-stat"><span>Move</span><b id="speed">360</b></div>
       </div>
+      <div class="creator-mark" aria-label="Game creator">Made by <b>Sahil(105)</b></div>
     </header>
 
     <div class="mission-strip" aria-label="Mission guidance">
@@ -73,6 +74,16 @@
           <div class="record-scroll"><table class="record-table"><thead><tr id="recordColumns"></tr></thead><tbody><tr id="recordValues"></tr></tbody></table></div>
           <div class="record-event" id="recordEvent">No entry is active.</div>
           <div class="intel-source" id="recordSource">DGOSTI source reference will appear here.</div>
+        </div>
+        <div class="card document-constellation" id="documentConstellation">
+          <div class="record-head"><div><span class="intel-kicker">STAGE DOCUMENT CONSTELLATION</span><h3>What is moving, waiting and being written</h3></div><span class="copy-badge">[ ] / V</span></div>
+          <button class="constellation-toggle" id="documentToggle" type="button" aria-expanded="true">Hide stage documents</button>
+          <div id="documentPanel">
+            <div class="document-tabs" id="documentTabs"></div>
+            <div class="document-sheet" id="documentSheet">
+              <p>Start a mission to inspect every document active at the current stage.</p>
+            </div>
+          </div>
         </div>
         <div class="card office-intel-card" id="officeIntelCard">
           <div class="intel-kicker">CLICK ANY OFFICE · TACTICAL DOSSIER</div>

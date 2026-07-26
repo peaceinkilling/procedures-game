@@ -74,6 +74,21 @@ assert.ok(mainSource.includes("['1','2','3','4'].includes(event.key)")&&mainSour
 assert.ok(uiSource.includes('updateRecordConsole')&&html.includes('id="recordConsole"'),'The live progressive document twin must remain outside the map.');
 assert.ok(html.includes('id="joystick"')&&mainSource.includes('engine.navigateToOffice(office.id)')&&engineSource.includes('autoNavigation'),'Mobile play must provide continuous joystick movement and tap-to-route.');
 assert.ok(uiSource.includes('Contingencies / situations')&&uiSource.includes('Normal route'),'Office entry must separate normal questions from source-backed contingencies.');
+assert.ok(html.includes('Made by <b>Sahil(105)</b>'),'Creator credit must remain visible in the persistent header.');
+assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
+assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
+assert.strictEqual(Object.keys(data.documentProfiles).length,data.characters.length,'Every playable Issue/Receipt entity needs a document profile.');
+for(const campaign of Object.values(data.campaigns))for(const stage of campaign.stages){
+  assert.ok(stage.documentIds.length,`${campaign.procedure} stage at ${stage.office} needs at least one active document.`);
+  stage.documentIds.forEach(id=>assert.ok(data.documentProfiles[id],`${campaign.procedure} stage ${stage.office} references missing document profile ${id}.`));
+}
+for(const profile of Object.values(data.documentProfiles)){
+  assert.ok(profile.frontEntries.every(entry=>entry.entry&&entry.filledBy&&entry.source),`${profile.id} front entries need content, responsibility and source.`);
+  assert.ok(profile.reverseEntries.every(entry=>entry.entry&&entry.filledBy&&entry.source),`${profile.id} reverse entries need content, responsibility and source.`);
+}
+assert.ok(data.documentProfiles.iv6.reverseEntries.length>=4,'IV6 must teach its cited reverse-side time, DOC, packing and dispatch entries.');
+assert.ok(data.documentProfiles.receiptVoucher1.reverseEntries.some(entry=>entry.entry.includes('Receipt Time Check')),'RV1 must teach its reverse-side Receipt Time Check.');
+assert.ok(data.documentProfiles.drs3.reverseEntries.some(entry=>entry.entry.includes('Progress chart')),'DRS3 must teach its reverse-side progress chart.');
 
 console.log(`PASS: ${data.characters.length} Issue/Receipt roster entities validated.`);
 console.log(`PASS: ${data.transitions.length} declared transitions checked.`);

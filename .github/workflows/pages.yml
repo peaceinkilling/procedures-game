@@ -1,4 +1,4 @@
-name: Deploy Depot Run to GitHub Pages
+name: Deploy Procedures Game to GitHub Pages
 
 on:
   push:
@@ -39,4 +39,3 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-

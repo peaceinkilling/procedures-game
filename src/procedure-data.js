@@ -426,10 +426,95 @@
   };
   const formByRole={irpsOriginal:'irps',irpsDuplicate:'irps',issuesControlSheet:'irps',trafficRegister:'trafficIssue',drs1:'trafficDrs',drs2:'subDepotDrs',drs3:'subDepotDrs',rcrs1:'rcrs',rcrs2:'rcrs',rcrs3:'rcrs'};
 
+  const reverseSideEntries={
+    irpsOriginal:[
+      {entry:'Movement record: SDIC → DOC, DOC → MLRS and MLRS → SDIC, with date and time.',filledBy:'SDIC / DOC / MLRS at the respective movement',source:'DGOSTI-002 para 91(a), PDF p.24'}
+    ],
+    irpsDuplicate:[
+      {entry:'Movement/progress stamp records SDIC → DOC, DOC → MLRS and MLRS → SDIC with date and time.',filledBy:'SDIC / DOC / MLRS at the respective movement',source:'DGOSTI-002 paras 91(a), 103 and 116, PDF pp.24, 28, 31'}
+    ],
+    iv1:[
+      {entry:'Packing Note serial number or serial-number block is endorsed.',filledBy:'Packing Section',source:'DGOSTI-002 para 152, PDF p.37'}
+    ],
+    iv4:[
+      {entry:'Receipt for stores and IV1, IV2, IV5 and IV6 handed to Packing is obtained here.',filledBy:'I/C Packing Section',source:'DGOSTI-002 paras 127(f) and 141, PDF pp.33, 36'}
+    ],
+    iv5:[
+      {entry:'Packing Note serial number or serial-number block is endorsed.',filledBy:'Packing Section',source:'DGOSTI-002 para 152, PDF p.37'}
+    ],
+    iv6:[
+      {entry:'Issue Time Check: demand received in depot, voucher received in Sub Depot, IV1 to Traffic and stores dispatched.',filledBy:'Voucher checker initially; SDIC, Packing and Traffic complete the applicable dates',source:'DGOSTI-002 paras 87, 91, 155 and 174, PDF pp.22, 24, 38, 43'},
+      {entry:'DOC stamp records that the voucher was reviewed against Dues Out Cards.',filledBy:'DOC',source:'DGOSTI-002 para 105, PDF p.29'},
+      {entry:'Special case-marking instructions, Packing Note serial block and package shed/area location are recorded.',filledBy:'Packing Section',source:'DGOSTI-002 paras 141 and 152, PDF pp.36–37'},
+      {entry:'Collection, traffic-shed hand-over, dispatch or local-collection acknowledgement details are signed, dated and timed as applicable.',filledBy:'Traffic representative / Traffic shed / authorised consignee representative',source:'DGOSTI-002 paras 161, 165, 174 and 189–190, PDF pp.40–46'}
+    ],
+    packingCompletionOriginal:[
+      {entry:'Traffic representative acknowledges receipt of the IV1 copies/package collection evidence.',filledBy:'Traffic representative',source:'DGOSTI-002 paras 156 and 158, PDF pp.38–39'}
+    ],
+    receiptVoucher1:[
+      {entry:'Receipt Time Check: DRS number/date, date stores received in Sub Depot, date voucher reached Accounts and date posted.',filledBy:'Receipt Liaison opens the stamp; Receipts Area, CAB receipt clerk and ledger poster complete their dates',source:'DGOSTI-001 Appendix D para 5 and Appendix O paras 2–3, PDF pp.27, 51–52'}
+    ],
+    drs1:[
+      {entry:'Receipt of DRS3 is acknowledged before DRS1 returns to Traffic.',filledBy:'Receipts Progress / Sub-Depot representative',source:'DGOSTI-001 Appendix D para 5, PDF p.27'}
+    ],
+    drs3:[
+      {entry:'Progress chart: stores received by Traffic; stores received in Sub Depot/Group; DRS2 received in Receipts Office; DRS3 passed to CRS/R&PS.',filledBy:'Traffic Receipts, Receipts Area, Receipts Progress and the forwarding clerk at their respective stages',source:'DGOSTI-001 Appendix C para 9(h), PDF p.22; RAOS Part II para 136(h), PDF p.69'}
+    ],
+    rndorBulk:[
+      {entry:'Signature of the representative collecting/delivering stores acknowledges the movement.',filledBy:'Collecting/delivering representative',source:'DGOSTI-001 Appendix K para 10(b), PDF p.35'}
+    ],
+    rndorDuesOut:[
+      {entry:'Further Part Voucher serial numbers and extraction date are endorsed; Dues Out Suspense acknowledges release.',filledBy:'Further Part Voucher Release Cell / Dues Out Suspense',source:'DGOSTI-001 Appendix L paras 4–5, PDF p.45'}
+    ],
+    discrepancyReport:[
+      {entry:'Receipts Area location of the discrepant stores and the custody signature are recorded on DR No.2.',filledBy:'Discrepancy clerk; signed by I/C Receipts Area',source:'DGOSTI-001 Appendix N para 2(i), PDF p.49'}
+    ],
+    crvException:[
+      {entry:'CRV progress stamp: regular voucher demand reference/date, expeditor issue, RV receipt date and RV-to-Accounts/CRS date.',filledBy:'Receipts Progress / R&PS at the prescribed milestones',source:'DGOSTI-001 Appendix D para 7(c), PDF p.28'}
+    ],
+    eachPackage:[
+      {entry:'Movement markings include consignee/destination, weight, voucher number and the individual/total package number.',filledBy:'Packing Section',source:'RAOS Part II paras 247–248, PDF pp.106–107'}
+    ]
+  };
+  const documentProfiles=Object.fromEntries(characters.map(character=>[character.id,{
+    id:character.id,procedure:character.procedure,title:character.name,copyPurpose:character.finalDisposition,
+    route:character.route,frontEntries:[{entry:`Lifecycle authority and copy-specific action follow the verified ${character.name} route.`,filledBy:'Current responsible office shown in the stage ledger',source:character.primarySourceRefs.join('; ')}],
+    reverseEntries:reverseSideEntries[character.id]||[],
+    source:character.primarySourceRefs.join('; ')
+  }]));
+  const officeDocumentSets={
+    Issue:{
+      DemandingUnit:['demand','iv2'],HQ:['demand'],ISS:['demand','irpsOriginal','irpsDuplicate'],ULC:['demand','irpsDuplicate'],IndentChecking:['demand','irpsDuplicate'],
+      ICR:['demand','irpsOriginal','irpsDuplicate','scheduleOfIndents'],VoucherPrep:['demand','irpsDuplicate','iv1','iv2','iv3','iv4','iv5','iv6'],
+      SDIC:['irpsDuplicate','iv3','iv4','iv5','iv6'],DOC:['iv1','iv2','iv3','iv4','iv5','iv6'],MLRS:['iv1','iv2','iv3','iv4','iv5','iv6'],
+      Selection:['stores','iv1','iv2','iv3','iv4','iv5','iv6','binCardSelection'],Packing:['stores','iv1','iv2','iv5','iv6','packingNoteOriginal','packingNoteDuplicate'],
+      Traffic:['stores','iv1','iv2','iv6','trafficRegister'],CAB:['iv3','iv4','accountCardPosting'],LAO:['iv3','iv5'],SM:['iv6'],RPS:['demand','irpsOriginal','iv2','iv5','iv6']
+    },
+    Receipt:{
+      Consignor:['advanceIssueVoucher','receiptVoucher2'],CentralRegistry:['advanceIssueVoucher'],Provision:['advanceIssueVoucher','receiptVoucher2'],TrafficReceipts:['drs1','drs2','drs3','receiptStoresBulk'],
+      ReceiptProgress:['advanceIssueVoucher','receiptVoucher1','receiptVoucher2','drs2','drs3','rcrs1'],ReceiptArea:['receiptVoucher1','receiptVoucher2','drs1','drs2','drs3','rndorBulk','rndorDuesOut'],
+      ReceiptLiaison:['receiptVoucher1','receiptVoucher2','drs2','rndorBulk','rndorDuesOut'],ReceiptControl:['receiptVoucher1','receiptVoucher2','drs2','rcrs1','rcrs2','rcrs3'],
+      MLRS:['receiptVoucher1'],DOC:['receiptVoucher1'],FPVRelease:['receiptVoucher1','rndorDuesOut'],DuesOutSuspense:['rndorDuesOut','receiptStoresDuesOut'],
+      BulkStore:['rndorBulk','receiptStoresBulk','binCardReceipt'],Packing:['receiptStoresDuesOut'],CAB:['receiptVoucher1','rcrs3','receiptAccountPosting'],
+      RPS:['receiptVoucher2','drs3','rcrs2'],ReceiptDiscrepancy:['discrepancyReport','adjustmentVoucher'],DAO:['discrepancyReport','adjustmentVoucher']
+    }
+  };
+  function stageDocumentIds(stage,procedure){
+    const ids=[...(officeDocumentSets[procedure]?.[stage.office]||[])],text=`${stage.focus} ${stage.companion} ${stage.waiting}`.toLowerCase();
+    const candidates=characters.filter(item=>item.procedure===procedure);
+    for(const character of candidates){
+      const aliases=[character.name.toLowerCase(),character.id.toLowerCase()];
+      if(aliases.some(alias=>alias.length>3&&text.includes(alias)))ids.push(character.id);
+    }
+    return [...new Set(ids)].filter(id=>documentProfiles[id]);
+  }
+  issueCampaignStages.forEach(stage=>stage.documentIds=stageDocumentIds(stage,'Issue'));
+  receiptCampaignStages.forEach(stage=>stage.documentIds=stageDocumentIds(stage,'Receipt'));
+
   return {
     procedure:'Issue and Receipt',
     receiptImplemented:true,
-    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,officeSituations,formSchemas,formByRole,
+    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,officeSituations,formSchemas,formByRole,documentProfiles,officeDocumentSets,
     roleInfo:legacy,
     mapOfficeIds:{Issue:['DemandingUnit','HQ','ISS','ULC','IndentChecking','ICR','VoucherPrep','SDIC','DOC','MLRS','Selection','Packing','Traffic','CentralRegistry','CAB','SM','RPS','LAO'],Receipt:['Consignor','CentralRegistry','Provision','TrafficReceipts','ReceiptProgress','ReceiptArea','ReceiptLiaison','ReceiptControl','MLRS','DOC','FPVRelease','DuesOutSuspense','BulkStore','Packing','ReceiptDiscrepancy','DAO','CAB','RPS']},
     sourcePolicy:{primary:['RAOS Part II','DGOSTI-002','DGOSTI-001'],providedPrimaryExtracts:true,sourceMap:'docs/PROCEDURE_SOURCE_MAP.md'}

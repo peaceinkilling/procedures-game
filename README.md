@@ -1,6 +1,6 @@
-# Depot Run — Issue & Receipt Procedures
+# Procedures Game — Issue & Receipt
 
-Play online: **https://peaceinkilling.github.io/ordnance-depot-learning-game/**
+Play online: **https://peaceinkilling.github.io/procedures-game/**
 
 A responsive top-down learning game for the complete normal Army Ordnance Issue and Receipt procedures. It runs directly in a modern browser on phones, tablets and computers—no installation or offline file sharing is required.
 
