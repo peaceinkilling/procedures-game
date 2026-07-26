@@ -476,8 +476,40 @@
       {entry:'Movement markings include consignee/destination, weight, voucher number and the individual/total package number.',filledBy:'Packing Section',source:'RAOS Part II paras 247–248, PDF pp.106–107'}
     ]
   };
+  const documentOrigins={};
+  const assignOrigin=(ids,preparedBy,creationAction,source)=>ids.forEach(id=>documentOrigins[id]={preparedBy,creationAction,source});
+  assignOrigin(['demand'],'Demanding Unit','Raises and signs the authorised demand/indent.','DGOSTI-002 paras 20–29 and 50–57, PDF pp.9–17');
+  assignOrigin(['irpsOriginal','irpsDuplicate','issuesControlSheet'],'ISS','Prepares the IRPS in duplicate as the Issue progress medium.','DGOSTI-002 paras 28 and 66–70, PDF pp.10, 19–20');
+  assignOrigin(['scheduleOfIndents'],'ISS; completed by Issue Control Registry','ISS prepares the schedule/control medium; Issue Control enters the allotted depot control numbers.','DGOSTI-002 paras 51, 56 and 67–70, PDF pp.15–20');
+  assignOrigin(['iv1','iv2','iv3','iv4','iv5','iv6'],'Voucher Preparation Section','Prepares and checks the six copy-specific Issue Vouchers from the controlled demand.','DGOSTI-002 paras 77–89, PDF pp.21–23');
+  assignOrigin(['packingNoteOriginal','packingNoteDuplicate'],'Packing Section','Prepares one original/duplicate Packing Note set for each package.','DGOSTI-002 paras 142, 148 and 152–153, PDF pp.36–37');
+  assignOrigin(['packingCompletionOriginal','packingCompletionDuplicate','collectionDocument'],'Packing Section','Prepares the Packing Completion Advice/collection evidence for hand-over to Traffic.','DGOSTI-002 paras 155–161, PDF pp.37–40');
+  assignOrigin(['roadTransit','convoyDocument'],'Traffic Branch','Prepares and controls the applicable road/convoy dispatch documents.','DGOSTI-002 paras 170–180, PDF pp.42–44');
+  assignOrigin(['railTransit'],'Traffic Branch; railway authority issues RR/PWB','Traffic assembles the rail dispatch set and exchanges/records the carrier-issued railway evidence.','DGOSTI-002 paras 163–175, PDF pp.40–43');
+  assignOrigin(['postalTransit'],'Traffic Postal Issues Section','Prepares the postal dispatch set and records the postal receipt.','DGOSTI-002 paras 176 and 182–185, PDF pp.43–45');
+  assignOrigin(['localIssueTransit'],'Traffic Local Issues Section','Prepares the local-collection authority and obtains the authorised representative’s receipt.','DGOSTI-002 paras 187–192, PDF pp.45–46');
+  assignOrigin(['railwayReceipt','parcelWayBill'],'Railway/carrier authority; handled by Traffic Branch','The carrier issues the RR/PWB; Traffic checks, records and forwards it under the prescribed dispatch set.','DGOSTI-002 paras 173–175, PDF p.43');
+  assignOrigin(['trafficRegister','localIssueRegister','postalIssueRegister'],'Traffic Branch / relevant Traffic section','Opens and maintains the applicable bound Traffic register entry.','DGOSTI-002 paras 164, 176–180 and 182–192, PDF pp.40–46');
+  assignOrigin(['stores'],'Not created as a document','The authorised stores are selected from stock and transferred through physical custody.','DGOSTI-002 paras 121, 128 and 141–162, PDF pp.32–40');
+  assignOrigin(['eachPackage','packageOneWithIv2'],'Packing Section','Forms, marks and numbers the physical package; Package No.1 receives IV2.','DGOSTI-002 paras 141–152 and 169, PDF pp.36–42');
+  assignOrigin(['accountCardPosting'],'CAB ledger poster; checked by ledger checker','Makes the account-card entry from IV4 and records the account reference, initials and date.','DGOSTI-002 paras 194–199, PDF pp.48–49');
+  assignOrigin(['binCardSelection'],'Selection Shed selector','Posts the selected quantity on the relevant Bin Card and initiates replenishment when prescribed.','DGOSTI-002 paras 128–131, PDF pp.33–34');
+  assignOrigin(['receiptedAcknowledgement'],'Voucher Preparation Section; completed by consignee','Voucher Preparation creates IV2; the consignee signs/dates it as the returned receipt acknowledgement.','RAOS Part II para 190(q), PDF p.85; DGOSTI-002 paras 147 and 210–213, PDF pp.36, 51–52');
+  assignOrigin(['unitPadBundle'],'R&PS/CRS','Assembles and closes the unit-pad bundle by linking the demand with returned control evidence.','DGOSTI-002 paras 210–214, PDF pp.51–53');
+  assignOrigin(['advanceIssueVoucher','receiptVoucher1','receiptVoucher2'],'Consignor','Prepares the consignor’s Issue Voucher copies; the receiving depot treats them as advance RV1, RV1 and RV2 for receipt control.','DGOSTI-001 broad principles para 2 and Appendices A–D, PDF pp.7–13, 25–30');
+  assignOrigin(['drs1','drs2','drs3'],'Traffic Receipts','Prepares the Daily Receipt Sheet in three copies for the consignment/Sub-Depot grouping.','DGOSTI-001 Appendix C paras 7–9, PDF pp.20–24');
+  assignOrigin(['rcrs1','rcrs2','rcrs3'],'Receipt Control Registry','Prepares the RCRS in triplicate and allots the receipt control number before splitting its copies.','DGOSTI-001 Appendix G paras 2–3, PDF pp.39–40');
+  assignOrigin(['rndorBulk','rndorDuesOut'],'Receipt Liaison Section','Prepares the RN&DOR Slip for the relevant Bulk/Detail or Dues-out destination.','DGOSTI-001 Appendix F para 1(c) and Appendices K–M, PDF pp.36–48');
+  assignOrigin(['receiptStoresBulk','receiptStoresDuesOut'],'Not created as a document','The consignor supplies the physical stores; Receipts Area checks and distributes them by authorised outcome.','DGOSTI-001 Appendix E and RAOS Part II paras 134–146, PDF pp.31–35, 63–74');
+  assignOrigin(['binCardReceipt'],'Bulk/Detail Store representative','Posts the received quantity on the Bin Card after binning/stacking the cleared stores.','DGOSTI-001 Appendix M, PDF pp.47–48');
+  assignOrigin(['receiptAccountPosting'],'CAB ledger poster; checked by ledger checker','Posts RV1 to the account card and completes the posting evidence.','DGOSTI-001 Appendix O paras 2–5, PDF pp.51–53');
+  assignOrigin(['discrepancyReport','adjustmentVoucher'],'Sub-Depot/Group Receipts Office Discrepancy Clerk','Prepares the Discrepancy Report in duplicate and the required IAFO-2715 adjustment documents in quadruplicate.','DGOSTI-001 Appendix N para 2(d), PDF p.49');
+  assignOrigin(['receiptedRv2'],'Consignor; receipt completed by authorised Sub-Depot/Group officer','The consignor originates RV2; the authorised receiving officer signs the cleared receipt copy before its return.','DGOSTI-001 Appendix D para 7(a), PDF pp.29–30');
+  assignOrigin(['crvException'],'Receipts Area, in the presence of an officer','Prepares the CRV in triplicate when both prescribed Receipt Voucher copies are unavailable.','DGOSTI-001 Appendix E paras 5–6, PDF pp.31–32');
+  assignOrigin(['ctcException'],'Receipts Progress Section','Makes the prescribed CTC copy/copies from the available Receipt Voucher when its companion copy is missing.','DGOSTI-001 Appendix D para 5(b), PDF p.28');
   const documentProfiles=Object.fromEntries(characters.map(character=>[character.id,{
     id:character.id,procedure:character.procedure,title:character.name,copyPurpose:character.finalDisposition,
+    preparedBy:documentOrigins[character.id].preparedBy,creationAction:documentOrigins[character.id].creationAction,creatorSource:documentOrigins[character.id].source,
     route:character.route,frontEntries:[{entry:`Lifecycle authority and copy-specific action follow the verified ${character.name} route.`,filledBy:'Current responsible office shown in the stage ledger',source:character.primarySourceRefs.join('; ')}],
     reverseEntries:reverseSideEntries[character.id]||[],
     source:character.primarySourceRefs.join('; ')

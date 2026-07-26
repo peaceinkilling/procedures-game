@@ -74,7 +74,7 @@ assert.ok(mainSource.includes("['1','2','3','4'].includes(event.key)")&&mainSour
 assert.ok(uiSource.includes('updateRecordConsole')&&html.includes('id="recordConsole"'),'The live progressive document twin must remain outside the map.');
 assert.ok(html.includes('id="joystick"')&&mainSource.includes('engine.navigateToOffice(office.id)')&&engineSource.includes('autoNavigation'),'Mobile play must provide continuous joystick movement and tap-to-route.');
 assert.ok(uiSource.includes('Contingencies / situations')&&uiSource.includes('Normal route'),'Office entry must separate normal questions from source-backed contingencies.');
-assert.ok(html.includes('Made by <b>Sahil(105)</b>'),'Creator credit must remain visible in the persistent header.');
+assert.ok(html.includes('By <b>Sahil(105)</b>'),'Creator credit must remain visible in the persistent header.');
 assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
 assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
 assert.strictEqual(Object.keys(data.documentProfiles).length,data.characters.length,'Every playable Issue/Receipt entity needs a document profile.');
@@ -83,6 +83,7 @@ for(const campaign of Object.values(data.campaigns))for(const stage of campaign.
   stage.documentIds.forEach(id=>assert.ok(data.documentProfiles[id],`${campaign.procedure} stage ${stage.office} references missing document profile ${id}.`));
 }
 for(const profile of Object.values(data.documentProfiles)){
+  assert.ok(profile.preparedBy&&profile.creationAction&&profile.creatorSource,`${profile.id} must identify who creates/prepares it and cite that origin.`);
   assert.ok(profile.frontEntries.every(entry=>entry.entry&&entry.filledBy&&entry.source),`${profile.id} front entries need content, responsibility and source.`);
   assert.ok(profile.reverseEntries.every(entry=>entry.entry&&entry.filledBy&&entry.source),`${profile.id} reverse entries need content, responsibility and source.`);
 }
