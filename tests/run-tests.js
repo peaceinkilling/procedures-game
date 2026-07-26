@@ -61,6 +61,8 @@ const engineSource=fs.readFileSync(path.join(__dirname,'..','src','engine.js'),'
 const mainSource=fs.readFileSync(path.join(__dirname,'..','src','main.js'),'utf8');
 const mapSource=fs.readFileSync(path.join(__dirname,'..','src','map.js'),'utf8');
 const uiSource=fs.readFileSync(path.join(__dirname,'..','src','ui.js'),'utf8');
+const archiveSource=fs.readFileSync(path.join(__dirname,'..','src','archive.js'),'utf8');
+const sessionSource=fs.readFileSync(path.join(__dirname,'..','src','session.js'),'utf8');
 const missionIndex=html.indexOf('class="mission-strip"');
 const layoutIndex=html.indexOf('class="layout"');
 const canvasIndex=html.indexOf('class="canvas-wrap"');
@@ -97,6 +99,20 @@ assert.match(data.documentProfiles.rndorBulk.frontEntries.map(item=>item.entry).
 assert.ok(data.documentProfiles.iv6.reverseEntries.length>=4,'IV6 must teach its cited reverse-side time, DOC, packing and dispatch entries.');
 assert.ok(data.documentProfiles.receiptVoucher1.reverseEntries.some(entry=>entry.entry.includes('Receipt Time Check')),'RV1 must teach its reverse-side Receipt Time Check.');
 assert.ok(data.documentProfiles.drs3.reverseEntries.some(entry=>entry.entry.includes('Progress chart')),'DRS3 must teach its reverse-side progress chart.');
+assert.ok(html.includes('id="archiveBtn"')&&html.includes('id="archiveOfficesTab"')&&html.includes('id="archiveDocumentsTab"'),'Archive must expose Sections/Branches and Documents as separate selectable indexes.');
+assert.ok(archiveSource.includes('renderOffice')&&archiveSource.includes('renderDocument')&&archiveSource.includes('Actions in chronological order'),'Archive must provide individual chronological office and document dossiers.');
+assert.ok(archiveSource.includes('Blank document')&&archiveSource.includes('Entirely filled lifecycle')&&archiveSource.includes('filledBy'),'Document Archive must show blank and completed responsibility-attributed views.');
+assert.ok(archiveSource.includes('not an official printable facsimile'),'Schematic blank documents must not be misrepresented as official source facsimiles.');
+for(const procedure of ['Issue','Receipt'])for(const officeId of data.mapOfficeIds[procedure]){
+  assert.ok(data.officeIntel[procedure][officeId].actions.length,`${procedure} Archive office ${officeId} needs chronological actions.`);
+}
+assert.ok(html.includes('id="loginOverlay"')&&html.includes('id="playerName"')&&html.includes('id="playerCourse"')&&html.includes('id="coursePassword"'),'Course access gate must collect name, course and password.');
+assert.ok(!sessionSource.includes('bom#105')&&!sessionSource.includes('bom#106'),'Course passwords must not be stored as plaintext in the shipped session module.');
+assert.ok(sessionSource.includes("'105':'a3778a955e2ecc")&&sessionSource.includes("'106':'317ed5868abccec"),'BOM 105 and BOM 106 password digests must remain distinct.');
+assert.ok(sessionSource.includes("name.toLowerCase()==='admin'")&&sessionSource.includes('if(!current||current.admin)return'),'Admin name bypass must work and admin activity must be excluded from logging.');
+assert.ok(sessionSource.includes('localStorage')&&sessionSource.includes('Download private CSV')===false&&html.includes('Download private CSV'),'Static analytics must use local browser storage and provide admin export.');
+assert.ok(engineSource.includes('recordMissionStart')&&engineSource.includes('recordStep')&&engineSource.includes('recordMistake')&&engineSource.includes('recordMissionEnd'),'Mission analytics must cover usage, control points, diagnostics, timing and scores.');
+assert.ok(html.includes('does not transmit names to GitHub or any remote server'),'The static analytics limitation must be disclosed to learners.');
 
 console.log(`PASS: ${data.characters.length} Issue/Receipt roster entities validated.`);
 console.log(`PASS: ${data.transitions.length} declared transitions checked.`);
@@ -104,3 +120,4 @@ console.log(`PASS: ${result.warnings.length} unresolved source gaps remain.`);
 console.log('PASS: Issue and Receipt office layouts have distinct, in-bounds footprints.');
 console.log('PASS: Every mapped office has role, actions, situations, deviations, memory cue and source basis.');
 console.log('PASS: Full campaigns distinguish custody hand-offs from concurrent-branch focus switches.');
+console.log('PASS: Archive chronology, course access and local-only admin analytics validated.');

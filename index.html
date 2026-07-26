@@ -26,6 +26,13 @@
       </div>
     </header>
 
+    <nav class="command-nav" aria-label="Game sections">
+      <button class="nav-command" id="archiveBtn" type="button"><span>ARCHIVE</span><b>Sections & Documents</b></button>
+      <button class="nav-command" id="hangarBtn" type="button"><span>MISSIONS</span><b>Character Hangar</b></button>
+      <button class="nav-command hidden" id="analyticsBtn" type="button"><span>ADMIN</span><b>Analytics & Export</b></button>
+      <div class="session-chip" id="sessionChip">Access verification required</div>
+    </nav>
+
     <div class="mission-strip" aria-label="Mission guidance">
       <div class="objective">
         <small id="modeLabel">Mission</small>
@@ -106,6 +113,70 @@
     </div>
   </div>
 
+  <div class="overlay access-overlay" id="loginOverlay">
+    <form class="modal access-card" id="accessForm">
+      <div class="access-emblem">◈</div>
+      <div class="intel-kicker">DEPOT RUN · CONTROLLED LEARNING ACCESS</div>
+      <h2>Identify your training session</h2>
+      <p class="lead">Enter your name and course. The access password is checked only for the selected course and is never written to the activity record.</p>
+      <label class="field">Name
+        <input class="select" id="playerName" name="playerName" autocomplete="name" maxlength="80" required placeholder="Your full name">
+      </label>
+      <label class="field">Course
+        <select class="select" id="playerCourse" name="playerCourse">
+          <option value="105">BOM 105</option>
+          <option value="106">BOM 106</option>
+        </select>
+      </label>
+      <label class="field" id="passwordField">Course password
+        <input class="select" id="coursePassword" name="coursePassword" type="password" autocomplete="current-password" required placeholder="Enter course password">
+      </label>
+      <div class="access-notice">This static edition keeps activity only in this browser until an administrator exports it. It does not transmit names to GitHub or any remote server.</div>
+      <div class="feedback hidden" id="accessFeedback" aria-live="polite"></div>
+      <button class="btn primary access-submit" type="submit">Enter Procedures Game</button>
+    </form>
+  </div>
+
+  <div class="overlay hidden" id="archiveOverlay">
+    <div class="modal archive-modal">
+      <div class="archive-top">
+        <div><div class="intel-kicker">DEPOT KNOWLEDGE ARCHIVE</div><h2>Procedure Archive</h2><p class="lead">Browse the procedure by responsible office or by document lifecycle.</p></div>
+        <button class="btn" id="archiveClose" type="button">Return to Game</button>
+      </div>
+      <div class="archive-toolbar">
+        <div class="archive-switch" role="tablist" aria-label="Archive section">
+          <button class="btn primary" id="archiveOfficesTab" role="tab" aria-selected="true" type="button">Sections / Branches</button>
+          <button class="btn" id="archiveDocumentsTab" role="tab" aria-selected="false" type="button">Documents</button>
+        </div>
+        <label class="field">Procedure
+          <select class="select" id="archiveProcedure"><option value="Issue">Issue</option><option value="Receipt">Receipt</option></select>
+        </label>
+        <label class="field archive-search">Search
+          <input class="select" id="archiveSearch" type="search" placeholder="Office, copy, entry or role">
+        </label>
+      </div>
+      <div class="archive-breadcrumb" id="archiveBreadcrumb">Archive / Sections & Branches</div>
+      <div class="archive-content" id="archiveContent" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="analyticsOverlay">
+    <div class="modal analytics-modal">
+      <div class="archive-top">
+        <div><div class="intel-kicker">LOCAL ADMIN CONSOLE</div><h2>Usage Analytics & Diagnostics</h2><p class="lead">Records held in this browser only. Admin sessions are excluded.</p></div>
+        <button class="btn" id="analyticsClose" type="button">Return to Game</button>
+      </div>
+      <div class="analytics-summary" id="analyticsSummary"></div>
+      <div class="analytics-actions">
+        <button class="btn primary" id="exportCsvBtn" type="button">Download private CSV</button>
+        <button class="btn" id="exportJsonBtn" type="button">Download JSON backup</button>
+        <button class="btn danger" id="clearAnalyticsBtn" type="button">Clear this browser’s records</button>
+      </div>
+      <div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Name</th><th>Course</th><th>Activity</th><th>Procedure / mode</th><th>Score</th><th>Timing</th><th>Diagnostics</th></tr></thead><tbody id="analyticsRows"></tbody></table></div>
+      <div class="access-notice">Centralized records from other devices are not available in a static GitHub Pages site. A private authenticated backend is required for cross-device collection.</div>
+    </div>
+  </div>
+
   <div class="overlay" id="startOverlay">
     <div class="modal hangar-modal">
       <h2>Character Selection Hangar</h2>
@@ -149,7 +220,7 @@
       <input type="hidden" id="roleSelect" value="iv1">
       <div class="start-row">
         <div class="review-key"><span class="status-dot approved"></span> Source-reviewed and playable <span class="status-dot legacy"></span> Qualified ruling with disclosed source anomaly</div>
-        <button class="btn primary" id="startBtn" type="button">Start Character Run</button>
+        <div><button class="btn hidden" id="hangarAnalyticsBtn" type="button">Open Admin Analytics</button> <button class="btn" id="hangarArchiveBtn" type="button">Open Procedure Archive</button> <button class="btn primary" id="startBtn" type="button">Start Character Run</button></div>
       </div>
     </div>
   </div>
@@ -170,7 +241,9 @@
   <script src="src/procedure-data.js"></script>
   <script src="src/map.js"></script>
   <script src="src/ui.js"></script>
-  <script src="src/engine.js"></script>
+  <script src="src/engine.js?v=20260726-2"></script>
+  <script src="src/session.js?v=20260726-3"></script>
+  <script src="src/archive.js?v=20260726-2"></script>
   <script src="src/main.js"></script>
   <script src="src/smoke-runner.js"></script>
 </body>
