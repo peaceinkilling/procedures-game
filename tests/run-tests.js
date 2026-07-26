@@ -62,6 +62,8 @@ const mainSource=fs.readFileSync(path.join(__dirname,'..','src','main.js'),'utf8
 const mapSource=fs.readFileSync(path.join(__dirname,'..','src','map.js'),'utf8');
 const uiSource=fs.readFileSync(path.join(__dirname,'..','src','ui.js'),'utf8');
 const archiveSource=fs.readFileSync(path.join(__dirname,'..','src','archive.js'),'utf8');
+require('../src/archive-data.js');
+const archiveData=global.DepotArchiveData;
 const sessionSource=fs.readFileSync(path.join(__dirname,'..','src','session.js'),'utf8');
 const missionIndex=html.indexOf('class="mission-strip"');
 const layoutIndex=html.indexOf('class="layout"');
@@ -92,7 +94,7 @@ for(const profile of Object.values(data.documentProfiles)){
   assert.ok(profile.frontEntries.every(entry=>!entry.entry.includes('Lifecycle authority and copy-specific action')),`${profile.id} must not use generic placeholder entry text.`);
   assert.ok(profile.reverseEntries.every(entry=>entry.entry&&entry.filledBy&&entry.source),`${profile.id} reverse entries need content, responsibility and source.`);
 }
-assert.match(data.documentProfiles.scheduleOfIndents.preparedBy,/Demanding Unit|originating office/,'Schedule of Indents must be attributed to the originating demand, not invented as an ISS-created form.');
+assert.match(data.documentProfiles.scheduleOfIndents.preparedBy,/Origin not stated/,'Schedule of Indents creator must not be invented when DGOSTI-002 only says it accompanies the demand.');
 assert.match(data.documentProfiles.irpsDuplicate.frontEntries.map(item=>item.entry).join(' '),/column 8.*column 9/i,'IRPS Duplicate must teach SDIC selection and packing progress columns.');
 assert.match(data.documentProfiles.drs1.frontEntries.map(item=>item.entry).join(' '),/RR\/PWB\/IB\/post receipt/i,'DRS must expose its source-defined transit-document entries.');
 assert.match(data.documentProfiles.rndorBulk.frontEntries.map(item=>item.entry).join(' '),/item-position suffix/i,'RN&DOR must expose its source-defined serial construction.');
@@ -100,9 +102,29 @@ assert.ok(data.documentProfiles.iv6.reverseEntries.length>=4,'IV6 must teach its
 assert.ok(data.documentProfiles.receiptVoucher1.reverseEntries.some(entry=>entry.entry.includes('Receipt Time Check')),'RV1 must teach its reverse-side Receipt Time Check.');
 assert.ok(data.documentProfiles.drs3.reverseEntries.some(entry=>entry.entry.includes('Progress chart')),'DRS3 must teach its reverse-side progress chart.');
 assert.ok(html.includes('id="archiveBtn"')&&html.includes('id="archiveOfficesTab"')&&html.includes('id="archiveDocumentsTab"'),'Archive must expose Sections/Branches and Documents as separate selectable indexes.');
-assert.ok(archiveSource.includes('renderOffice')&&archiveSource.includes('renderDocument')&&archiveSource.includes('Actions in chronological order'),'Archive must provide individual chronological office and document dossiers.');
-assert.ok(archiveSource.includes('Blank document')&&archiveSource.includes('Entirely filled lifecycle')&&archiveSource.includes('filledBy'),'Document Archive must show blank and completed responsibility-attributed views.');
-assert.ok(archiveSource.includes('not an official printable facsimile'),'Schematic blank documents must not be misrepresented as official source facsimiles.');
+assert.ok(html.includes('src/archive-data.js'),'Verified Archive data must load separately from gameplay procedure data.');
+assert.ok(archiveSource.includes('renderOffice')&&archiveSource.includes('renderDocument')&&archiveSource.includes('Lifecycle flowchart'),'Archive must provide individual cited office dossiers and document flowcharts.');
+assert.ok(!archiveSource.includes('Blank document')&&!archiveSource.includes('blank-line'),'Archive must not generate speculative blank-document facsimiles.');
+assert.deepStrictEqual(Object.keys(archiveData.offices.Issue).sort(),data.mapOfficeIds.Issue.slice().sort(),'Every Issue map office needs a verified Archive classification.');
+assert.deepStrictEqual(Object.keys(archiveData.offices.Receipt).sort(),data.mapOfficeIds.Receipt.slice().sort(),'Every Receipt map office needs a verified Archive classification.');
+assert.strictEqual(archiveData.documents.Issue.length,21,'Issue Archive must expose only the 21 independently verified documents/records.');
+assert.strictEqual(archiveData.documents.Receipt.length,17,'Receipt Archive must expose only the 17 independently verified documents/records.');
+assert.strictEqual(new Set([...archiveData.documents.Issue,...archiveData.documents.Receipt].map(item=>item.id)).size,38,'Verified Archive document IDs must be unique.');
+for(const procedure of ['Issue','Receipt']){
+  for(const profile of Object.values(archiveData.offices[procedure])){
+    assert.ok(profile.officialName&&profile.classification&&profile.sequence&&profile.role&&profile.boundary,`${procedure} Archive office needs official identity and procedural boundary.`);
+    assert.ok(profile.actions.length&&profile.actions.every(item=>item.text&&item.evidence?.source&&item.evidence?.reference&&item.evidence?.pages),`${profile.officialName} actions must have paragraph/page citations.`);
+  }
+  for(const profile of archiveData.documents[procedure]){
+    assert.ok(profile.origin&&profile.purpose&&profile.disposal,`${profile.id} needs verified origin, purpose and disposal.`);
+    assert.ok(profile.contents.length&&profile.contents.every(item=>item.name&&item.text&&item.evidence?.reference),`${profile.id} contents must be cited.`);
+    assert.ok(profile.flowchart.length&&profile.flowchart.every(stage=>stage.label&&stage.text&&stage.evidence?.reference),`${profile.id} flowchart stages must be cited.`);
+  }
+}
+assert.strictEqual(archiveData.offices.Issue.ICR.officialName,'Control Registry','Issue Archive must use the exact DGOSTI Section VII name.');
+assert.strictEqual(archiveData.offices.Receipt.ReceiptControl.officialName,'Receipts Control Registry','Receipt Archive must use the exact DGOSTI Appendix G name.');
+assert.ok(archiveData.documents.Issue.find(item=>item.id==='iv2').flowchart.some(stage=>stage.status==='conflict'),'IV2 Archive flow must disclose, not conceal, the returned-copy source conflict.');
+assert.ok(archiveData.excluded.Issue.some(item=>item.includes('No separate “Issues Control Sheet equivalent”')),'Archive must explicitly reject the invented separate Issues Control Sheet.');
 for(const procedure of ['Issue','Receipt'])for(const officeId of data.mapOfficeIds[procedure]){
   assert.ok(data.officeIntel[procedure][officeId].actions.length,`${procedure} Archive office ${officeId} needs chronological actions.`);
 }

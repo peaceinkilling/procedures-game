@@ -480,7 +480,7 @@
   const assignOrigin=(ids,preparedBy,creationAction,source)=>ids.forEach(id=>documentOrigins[id]={preparedBy,creationAction,source});
   assignOrigin(['demand'],'Demanding Unit','Raises and signs the authorised demand/indent.','DGOSTI-002 paras 20–29 and 50–57, PDF pp.9–17');
   assignOrigin(['irpsOriginal','irpsDuplicate','issuesControlSheet'],'ISS','Prepares the IRPS in duplicate as the Issue progress medium.','DGOSTI-002 paras 28 and 66–70, PDF pp.10, 19–20');
-  assignOrigin(['scheduleOfIndents'],'Demanding Unit / originating office; completed by Issue Control Registry','The Schedule of Indents accompanies the demand into the depot; Issue Control enters the allotted depot control number against each listed indent.','DGOSTI-002 paras 22, 51, 56 and 67–70, PDF pp.9, 15–20');
+  assignOrigin(['scheduleOfIndents'],'Origin not stated in DGOSTI-002; completed by Control Registry','The Schedule of Indents is already accompanying the demands when received. Control Registry enters the allotted control number against each listed indent.','DGOSTI-002 paras 22, 51, 56 and 67–70, PDF pp.9, 15–20');
   assignOrigin(['iv1','iv2','iv3','iv4','iv5','iv6'],'Voucher Preparation Section','Prepares and checks the six copy-specific Issue Vouchers from the controlled demand.','DGOSTI-002 paras 77–89, PDF pp.21–23');
   assignOrigin(['packingNoteOriginal','packingNoteDuplicate'],'Packing Section','Prepares one original/duplicate Packing Note set for each package.','DGOSTI-002 paras 142, 148 and 152–153, PDF pp.36–37');
   assignOrigin(['packingCompletionOriginal','packingCompletionDuplicate','collectionDocument'],'Packing Section','Prepares the Packing Completion Advice/collection evidence for hand-over to Traffic.','DGOSTI-002 paras 155–161, PDF pp.37–40');
@@ -520,8 +520,8 @@
     recordEntry('Progress columns: the Duplicate records selection in column 8 and packing in column 9; the Original is the R&PS progress/control copy for IV5, IV6, acknowledgement and remarks.','SDIC on the Duplicate; R&PS/CRS on the Original','DGOSTI-002 paras 95–96 and 210–214; Appendix A, PDF pp.25–26, 51–53, 56')
   ]);
   assignEntries(['scheduleOfIndents'],[
-    recordEntry('Indent/demand references listed for the originating batch; the schedule travels with the demanding documents.','Demanding Unit / originating office','DGOSTI-002 paras 22, 51 and 56, PDF pp.9, 15, 17'),
-    recordEntry('Allotted depot control number entered against each corresponding indent before return through Central Registry.','Issue Control Registry','DGOSTI-002 paras 67–70, PDF pp.19–20')
+    recordEntry('Indent/demand references listed for the originating batch; the schedule travels with the demanding documents.','Originator not stated in DGOSTI-002','DGOSTI-002 paras 22, 51 and 56, PDF pp.9, 15–16'),
+    recordEntry('Allotted depot control number entered against each corresponding indent before return through Central Registry.','Control Registry','DGOSTI-002 paras 67–70, PDF pp.19–20')
   ]);
   const issueVoucherFields=[
     recordEntry('Depot/control identity, consignee address and station, demand nature and depot-receipt date, plus applicable static-unit/WET markings.','Voucher Preparation typist','DGOSTI-002 paras 80–84, PDF pp.21–22'),

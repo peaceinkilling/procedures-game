@@ -2,12 +2,14 @@
 
 ## Archive
 
-The in-game Archive has two source-backed indexes:
+The in-game Archive has two DGOSTI-audited indexes:
 
-1. **Sections / Branches** — every mapped Issue and Receipt office, its role, ordered actions, situations, safeguards and every playable document route that passes through it.
-2. **Documents** — every playable entity, its originator, purpose, closure evidence, chronological route, blank learning template and completed responsibility-attributed lifecycle.
+1. **Verified Sections / Branches** — every mapped point classified as an official DGOSTI section/appendix, a supporting branch, an external actor or a cross-procedure hand-off. Each action has a paragraph/appendix and PDF-page citation.
+2. **Verified Documents** — only independently supportable documents and records. Each page shows verified contents/endorsements, a cited lifecycle flowchart and final disposal.
 
-The blank document view is explicitly described as a schematic learning template. It is not presented as an official printable facsimile unless the active source contains an exact reproduced form schema. The completed view distinguishes an attributed entry from a custody/control stage where no new writing is asserted.
+Speculative blank learning forms have been removed. When DGOSTI does not reproduce a blank form, the Archive explicitly says so and lists only the fields or endorsements stated in the cited paragraphs. Physical stores, packages and lifecycle states are not mislabelled as documents.
+
+See `ARCHIVE_DGOSTI_AUDIT.md` for the exact naming, inclusion and uncertainty rules.
 
 ## Course access
 
