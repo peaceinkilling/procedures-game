@@ -45,6 +45,8 @@
       const center=root.DepotMap.center(office);game.player.x=center.x;game.player.y=center.y;
       const before=game.index;root.DepotEngine.interact();
       if(document.getElementById('miniOverlay').classList.contains('hidden'))throw new Error(`${label}: ${target} did not open an office challenge`);
+      const modalText=document.getElementById('miniModal').innerText;
+      if(/process .*pass it onward|complete (?:its|the) cited .*action|as specified (?:by DGOSTI|at each cited transition)/i.test(modalText))throw new Error(`${label}: ${target} exposed a generic procedural placeholder`);
       const clicked=clickCorrect(game);if(!clicked)throw new Error(`${label}: no supported correct control at ${target}: ${document.getElementById('miniModal').innerText.slice(0,160)}`);
       if(clicked==='gate'){await wait();if(!clickCorrect(game))throw new Error(`${label}: normal-route office question did not open after situation selection at ${target}`)}
       for(let tries=0;tries<80&&game.running&&game.index===before;tries++)await wait();

@@ -191,7 +191,7 @@
   });
   const approved = (id,name,group,icon,route,finalDisposition,closureProof,primarySourceRefs,extra={}) => ({
     id,procedure:'Issue',name,group,icon,playable:true,routeStatus:'approved',route,spawnPoint:route[0],finalDisposition,closureProof,
-    companion:extra.companion||'As specified at each cited transition.',waitingElsewhere:extra.waitingElsewhere||'Recorded in the cited control medium.',
+    companion:extra.companion||`${name} follows its declared copy-specific route.`,waitingElsewhere:extra.waitingElsewhere||'Concurrent copies remain at their separately declared lifecycle positions.',
     sourceRefs:[rosterSource,...primarySourceRefs],primarySourceRefs,reviewNote:extra.reviewNote||'Primary-source route approved from the supplied local editions.'
   });
 
@@ -235,7 +235,7 @@
   const dgosReceipt = 'doc 2 main remove/DGOS/DGOS TI 001 RECEIPT PROCEDURE.pdf — broad principles para 2 (PDF pp.7–10)';
   const receiptApproved = (id,name,group,icon,route,finalDisposition,closureProof,refs,extra={}) => ({
     id,procedure:'Receipt',name,group,icon,playable:true,routeStatus:'approved',route,spawnPoint:route[0],finalDisposition,closureProof,
-    companion:extra.companion||'As specified by DGOSTI-001 at each transition.',waitingElsewhere:extra.waitingElsewhere||'Tracked by DRS Register and RCRS.',
+    companion:extra.companion||`${name} follows its declared copy-specific route.`,waitingElsewhere:extra.waitingElsewhere||'Concurrent receipt copies remain at their separately declared lifecycle positions.',
     sourceRefs:[...refs],primarySourceRefs:refs,reviewNote:extra.reviewNote||'Cross-checked in supplied RAOS Part II and DGOSTI-001 editions.'
   });
   const receiptReview = (id,name,group,icon,note) => ({id,procedure:'Receipt',name,group,icon,playable:false,reviewPlayable:true,routeStatus:'domain-review',route:null,spawnPoint:null,finalDisposition:null,closureProof:null,companion:null,waitingElsewhere:null,sourceRefs:[dgosReceipt],primarySourceRefs:[],reviewNote:note});
@@ -733,6 +733,179 @@
       routeEvent('Pass released stores with IV1, IV2, IV5 and IV6 into Issue packing.','This is the Receipt-to-Issue hand-off.','Released stores and Issue Voucher copies.','IV3/IV4 go separately to SDIC/Accounts.',['receiptStoresDuesOut','iv1','iv2','iv5','iv6'])
     ]
   };
+
+  const issueVoucherIds=new Set(['iv1','iv2','iv3','iv4','iv5','iv6']);
+  const transitIds=new Set(['roadTransit','railTransit','postalTransit','localIssueTransit','railwayReceipt','parcelWayBill','convoyDocument']);
+  const packageIds=new Set(['stores','eachPackage','packageOneWithIv2']);
+  function issueBundle(character,office,index){
+    const id=character.id;
+    if(issueVoucherIds.has(id)){
+      if(['VoucherPrep','SDIC','DOC','MLRS'].includes(office))return 'Controlled demand, IRPS Duplicate and the six-copy Issue Voucher set (IV1–IV6).';
+      if(office==='Selection')return id==='iv3'||id==='iv4'?'IV3 and IV4, split back to SDIC after selection.':'Selected stores with IV1, IV2, IV5 and IV6; IV3/IV4 take the separate SDIC–Accounts branch.';
+      if(office==='Packing')return id==='iv2'?'IV2 inside Package No. 1.':id==='iv5'?'IV5, returned from Packing to SDIC as packing-progress evidence.':`${character.name} with the packed consignment and the applicable packing evidence.`;
+      if(office==='Traffic')return id==='iv2'?'Package No. 1 containing IV2, travelling with the consignment.':`${character.name}, the packages and the applicable despatch evidence.`;
+      return character.name+'.';
+    }
+    if(id==='demand')return office==='DemandingUnit'?'Authorised demand/indent.':office==='RPS'?'Demand linked to the central IRPS and the issue-control papers.':'Demand/indent with the applicable IRPS and control evidence.';
+    if(id==='irpsDuplicate')return office==='ISS'||office==='ULC'||office==='IndentChecking'?'IRPS Duplicate with the demands being sorted and checked.':office==='ICR'||office==='VoucherPrep'?'IRPS Duplicate with the controlled demand.':'IRPS Duplicate and the Sub-Depot execution papers.';
+    if(id==='irpsOriginal'||id==='issuesControlSheet')return `${character.name}, the central Issue progress medium.`;
+    if(id==='scheduleOfIndents')return 'Schedule of Indents carrying the listed demands and, after control, their allotted control numbers.';
+    if(id.startsWith('packingNote'))return 'One original/duplicate Packing Note set for the corresponding package.';
+    if(id.startsWith('packingCompletion')||id==='collectionDocument')return 'Packing Completion Advice/collection evidence linked to the listed packages.';
+    if(transitIds.has(id))return `${character.name} with the applicable IV1/consignment or returned acknowledgement required by that transport mode.`;
+    if(['trafficRegister','localIssueRegister','postalIssueRegister'].includes(id))return `${character.name}, retained as the applicable Traffic control record.`;
+    if(packageIds.has(id))return office==='Selection'?'Selected stores with IV1, IV2, IV5 and IV6.':office==='Packing'?'Packed stores; Package No. 1 contains IV2, and each package contains its original Packing Note.':'Packages with the prescribed Issue and transit papers.';
+    if(id==='receiptedAcknowledgement')return 'Receipted IV2, signed and dated by the consignee.';
+    return character.name+'.';
+  }
+  function issueStageAction(character,office,index){
+    const id=character.id,next=character.route[index+1],last=index===character.route.length-1,secondVisit=character.route.indexOf(office)!==index;
+    if(office==='DemandingUnit'){
+      if(id==='demand')return 'Raise and sign the authorised demand/indent, then send it to Depot Headquarters for receipt control.';
+      if(id==='scheduleOfIndents')return 'Receive the returned Schedule of Indents carrying the allotted depot control numbers and retain it as the unit’s control-number intimation.';
+      if(id==='receiptedAcknowledgement')return 'Check the received stores, sign and date IV2 as the receipt acknowledgement, and return that receipted IV2 to R&PS/CRS.';
+      if(transitIds.has(id))return next==='Traffic'?'Acknowledge receipt on the prescribed convoy/local-collection copy and return that copy to Traffic.':'Accept the applicable carrier/dispatch paper with the consignment and retain it for the consignee’s receipt action.';
+      return id==='iv2'?'Open Package No. 1, check the stores, sign/date IV2 and return the receipted copy to R&PS/CRS.':'Check the stores and packages against the issue papers and accept the consignment for the demanding unit.';
+    }
+    if(office==='HQ')return 'Date- and time-stamp the incoming demand, establish depot receipt, and send it to Indent Sorting Section.';
+    if(office==='ISS'){
+      if(id==='scheduleOfIndents')return 'Keep the accompanying Schedule of Indents with the sorted demand batch and send it to Indent Checking; do not invent or re-create the schedule here.';
+      return 'Sort the demands by the prescribed grouping, prepare the IRPS in duplicate with columns 1–4, and send any non-static-unit case through ULC.';
+    }
+    if(office==='ULC')return `Verify the non-static unit’s location, annotate the ${id==='demand'?'demand':'IRPS Duplicate'}, and return the papers to Indent Checking.`;
+    if(office==='IndentChecking')return `Check authority, unit identity, nomenclature, entitlement and completeness; initial/date the checked demand and send ${id==='scheduleOfIndents'?'the accompanying schedule with it':'the correct papers'} to Issue Control Registry.`;
+    if(office==='ICR'){
+      if(id==='scheduleOfIndents')return 'Allot the depot control number and enter it against each indent on the Schedule of Indents before sending the completed schedule to Central Registry.';
+      if(id==='irpsOriginal'||id==='issuesControlSheet')return 'Complete IRPS control columns 5–7 and split the Original to R&PS/CRS as the central progress copy.';
+      if(id==='irpsDuplicate')return 'Complete IRPS control columns 5–7 and send the Duplicate with the controlled demand to Voucher Preparation.';
+      return 'Allot the depot control number, complete the IRPS control entries and send the controlled demand to Voucher Preparation.';
+    }
+    if(office==='CentralRegistry')return 'Register and despatch the completed Schedule of Indents to the demanding unit as control-number intimation.';
+    if(office==='VoucherPrep'){
+      if(id==='demand')return 'Use the controlled demand to prepare and check IV1–IV6, then forward the demand to R&PS/CRS for the central unit-pad watch.';
+      if(id==='irpsDuplicate')return 'Link the IRPS Duplicate and controlled demand to the checked IV1–IV6 set, then send the execution bundle to SDIC.';
+      return `Prepare and check ${character.name} as its distinct member of IV1–IV6, recording the prescribed depot, consignee, demand and item particulars before sending the voucher set to SDIC.`;
+    }
+    if(office==='SDIC'){
+      if(id==='irpsDuplicate'&&last)return 'Record the returned selection and packing progress, cross the prescribed checklist entries, and file the IRPS Duplicate in the SDIC monthly folder.';
+      if(id==='iv3'||id==='iv4')return secondVisit?`Receive ${character.name} back from Selection and send it with its paired accounts copy to CAB.`:`Register ${character.name} in the Sub-Depot progress watch and send the execution papers through DOC and MLRS.`;
+      if(id==='iv5'&&secondVisit)return 'Receive IV5 back from Packing, record the packing-progress return, and send IV5 to R&PS/CRS for LAO scheduling.';
+      return `Register ${character.name} in the Sub-Depot execution watch, preserve its copy identity, and send the papers to DOC for issue-position review.`;
+    }
+    if(office==='DOC')return `Review the issue/dues-out position affecting ${character.name}, mark the supported quantities or status, and send the papers to MLRS; do not treat this as location marking.`;
+    if(office==='MLRS')return `Confirm the authorised item identity and mark the exact shed/rack location on the execution papers carrying ${character.name}, then release them for Selection.`;
+    if(office==='Selection'){
+      if(id==='binCardSelection')return 'Post the selected quantity and resulting balance on the relevant Bin Card, and initiate replenishment action when the prescribed point is reached.';
+      if(packageIds.has(id))return 'Pick the authorised item and quantity from the MLRS-marked location, post the Bin Card, and send the stores with IV1, IV2, IV5 and IV6 to Packing.';
+      if(id==='iv3'||id==='iv4')return `After selection, split ${character.name} with ${id==='iv3'?'IV4':'IV3'} back to SDIC for the Accounts/LAO branch.`;
+      return `After selection, keep ${character.name} with the stores in the IV1/IV2/IV5/IV6 bundle and send that bundle to Packing.`;
+    }
+    if(office==='Packing'){
+      if(id==='packingNoteOriginal')return 'Prepare, sign and witness the original Packing Note for this package, cross-reference its serial on IV1/IV5/IV6, and enclose the original in that package.';
+      if(id==='packingNoteDuplicate')return 'Prepare, sign and witness the duplicate Packing Note and retain it in the bound Packing record in numerical sequence.';
+      if(id==='packingCompletionOriginal')return 'List the IV1 control/Sub-Depot serials on the original Packing Completion Advice and hand it with the packages to Traffic for signed takeover.';
+      if(id==='packingCompletionDuplicate')return 'Retain the duplicate Packing Completion Advice after obtaining Traffic’s takeover signature, and file it serially in Packing.';
+      if(id==='collectionDocument')return 'Prepare the package-collection hand-over evidence, obtain Traffic’s acknowledgement for the listed packages, and pass the connected original to Traffic.';
+      if(id==='iv2')return 'Place IV2 inside Package No. 1 so the consignee can receipt and return it after checking the stores.';
+      if(id==='iv5')return 'Enter the packing references on IV5 and return IV5 to SDIC as packing-progress evidence; do not despatch it with the consignment.';
+      if(packageIds.has(id))return 'Check and pack the stores, number/mark each package, enclose IV2 in Package No. 1 and an original Packing Note in each package, then hand the consignment to Traffic.';
+      return `Record the package/Packing Note references on ${character.name} and send it with the packed consignment to Traffic.`;
+    }
+    if(office==='Traffic'){
+      if(id==='packingCompletionOriginal'||id==='collectionDocument')return `Sign for the packages against ${character.name}, record the collection date/time, and file the connected Traffic copy in serial order.`;
+      if(id==='trafficRegister')return 'Enter control number, collection, IV1 despatch, stores despatch, carrier reference and remarks in the Traffic Register, then retain the bound entry.';
+      if(id==='localIssueRegister')return 'Record the authorised representative, IV1 authority, collection signature/date and return control in the Local Issues Register.';
+      if(id==='postalIssueRegister')return 'Record the postal despatch and postal receipt/reference in the Postal Issue Register and retain the supporting postal evidence.';
+      if(id==='roadTransit'||id==='convoyDocument')return secondVisit?'Enter the returned acknowledgement against the open convoy/road entry and file the closed copy in Traffic.':'Prepare and serially control the Convoy Note/road copies, distribute the prescribed copies and record despatch before releasing the load.';
+      if(id==='localIssueTransit')return secondVisit?'Enter the returned local-collection acknowledgement and close the Local Issues Register watch.':'Verify the authorised representative and IV1 collection authority, obtain custody signature, and release the consignment for local collection.';
+      if(id==='railTransit'||id==='railwayReceipt'||id==='parcelWayBill')return 'Check and record the carrier-issued RR/PWB reference, link it to IV1 and the despatch entry, and forward the prescribed carrier evidence with the rail consignment.';
+      if(id==='postalTransit')return 'Register the postal issue, obtain and link the postal receipt/reference, and despatch the applicable IV1 or advice with the package.';
+      if(id==='iv6')return 'Enter the actual despatch particulars on IV6 and send IV6 to R&PS/CRS for progress and Issue Time Check control.';
+      if(id==='iv1')return 'Use IV1 as the despatch/consignee copy, record the applicable carrier details and send it with the consignment to the demanding unit.';
+      return 'Take over the packages against signed Packing evidence, prepare the transport-mode records and despatch the consignment to the demanding unit.';
+    }
+    if(office==='CAB'){
+      if(id==='iv4'||id==='accountCardPosting')return 'Post the issue from IV4 to the account card, enter the account reference, initial/date and check the posting, then file IV4.';
+      return 'Receive IV3 with IV4, record the accounts receipt, and place IV3 on the prescribed skeleton/supplementary list for LAO.';
+    }
+    if(office==='LAO')return `Receive ${character.name} through the prescribed skeleton/supplementary list and retain the scheduled audit trail.`;
+    if(office==='SM')return 'Read the despatch evidence on IV6, enter the Issue Time Check, and return IV6 to R&PS/CRS for unit-pad closure.';
+    if(office==='RPS'){
+      if(id==='irpsOriginal'||id==='issuesControlSheet')return 'Maintain the Original IRPS as the central progress record, mark the prescribed milestones and file it in the monthly Sub-Depot/Group pad.';
+      if(id==='irpsDuplicate')return 'Progress the central watch while the IRPS Duplicate remains with Sub-Depot execution; do not merge the two copy purposes.';
+      if(id==='iv2'||id==='receiptedAcknowledgement')return 'Record the returned acknowledgement on the progress control and file the receipted IV2 in control-number order.';
+      if(id==='iv5')return 'Record IV5’s packing return and place it on the prescribed LAO skeleton/supplementary list.';
+      if(id==='iv6')return secondVisit?'Link the time-checked IV6 with the relevant demand and close/file the unit pad.':'Record the despatch progress from IV6 and send it to S&M for Issue Time Check.';
+      if(id==='demand')return 'Retain the demand in the central unit-pad watch and link it to the later returned/despatch evidence before closure.';
+      if(id==='unitPadBundle')return 'Assemble the demand, time-checked IV6 and applicable returned control evidence, mark the pad complete and retain it in the unit-pad registry.';
+    }
+    return `${officeIntel.Issue[office].actions[0]} Apply that cited action specifically to ${character.name} before ${next?`handing it to ${offices.find(item=>item.id===next).label}`:'closing its declared lifecycle'}.`;
+  }
+  function receiptBundle(character,office){
+    const id=character.id;
+    if(id==='advanceIssueVoucher'||id==='receiptVoucher1')return office==='ReceiptLiaison'||office==='ReceiptControl'||office==='ReceiptArea'?'RV1, RV2 and DRS2 as the linked receipt-control set.':'RV1 advance/controlled copy at its declared holder.';
+    if(id==='drs1')return office==='ReceiptArea'?'DRS1–3 with the packages at first takeover.':'DRS1 with the convoy/transit evidence.';
+    if(id==='drs3')return 'DRS3, acknowledged and routed as the R&PS/CRS progress copy.';
+    if(id.startsWith('rcrs'))return `${character.name}, split from the triplicate RCRS at Receipt Control.`;
+    if(id==='discrepancyReport')return 'Discrepancy Report with the receipt reference, physical discrepancy evidence and controlled adjustment papers.';
+    if(id==='adjustmentVoucher')return 'IAFO-2715 adjustment set linked to the Discrepancy Report and authorised control.';
+    if(id==='receiptedRv2')return 'Receipted RV2 with the receipt-control and return-progress evidence.';
+    if(id==='crvException')return 'Triplicate CRV set with DRS, package markings/weights, Packing Notes and available transit/voucher evidence.';
+    if(id==='ctcException')return 'Reconstructed RV1 plus the travelling CTC and the separately retained trap copy.';
+    return character.name+'.';
+  }
+  function receiptStageAction(character,office,index){
+    const id=character.id,next=character.route[index+1],secondVisit=character.route.indexOf(office)!==index;
+    if(id==='advanceIssueVoucher'){
+      return {Consignor:'Send the advance RV1 to the receiving depot before the physical consignment.',CentralRegistry:'Date-stamp the advance RV1 and send it to Provision; send transit papers separately to Traffic Receipts.',Provision:'Open the dues-in watch from the advance RV1 and send it to Receipts Progress.',ReceiptProgress:'File the advance RV1 in the consignor pad until RV2 and DRS2 arrive for marriage.'}[office];
+    }
+    if(id==='drs1'){
+      return {TrafficReceipts:index===0?'Prepare DRS1–3 for the consignment/Sub-Depot grouping and send all three with the packages to Receipts Area.':'Receive acknowledged DRS1 back, clear the Traffic DRS Register and file DRS1 with the convoy note in serial order.',ReceiptArea:'Take over the packages, acknowledge DRS1 and return DRS1 to Traffic; retain DRS2 and send DRS3 to Progress.'}[office];
+    }
+    if(id==='drs3'){
+      return {TrafficReceipts:'Prepare DRS3 as part of the three-copy DRS set and send it with the packages to Receipts Area.',ReceiptArea:'Acknowledge DRS3 at package takeover and send it to Receipts Progress; DRS1 returns to Traffic and DRS2 stays with the stores-side papers.',ReceiptProgress:'Enter/track the DRS3 movement in the Sub-Depot DRS control and send DRS3 to R&PS/CRS.',RPS:'Receive and file DRS3 as the central receipt-progress copy.'}[office];
+    }
+    if(id.startsWith('rcrs')){
+      if(office==='ReceiptControl')return `Prepare the triplicate RCRS, open columns 1–6 and split ${character.name} to ${id==='rcrs1'?'Receipts Progress':id==='rcrs2'?'R&PS/CRS':'CAB'}.`;
+      if(id==='rcrs1')return 'Use RCRS1 as the Receipts Progress control copy and enter the supported distribution/return clearance milestones.';
+      if(id==='rcrs2')return 'Use RCRS2 to progress DRS3 and the receipted RV2 return, preserving it as the R&PS/CRS control copy.';
+      return 'Use RCRS3 to watch RV1 account posting in CAB and enter the supported posting date in column 8.';
+    }
+    if(id==='binCardReceipt')return 'After cleared stores are binned/stacked, post the received quantity, reference and resulting balance on the Bulk/Detail Store Bin Card.';
+    if(id==='receiptAccountPosting')return 'Post RV1 to the account card, record the receipt-control/account reference, initial/date and check the entry, then retain the posting evidence.';
+    if(id==='receiptedRv2')return {ReceiptProgress:'Obtain/verify the authorised receipt on RV2 and send the receipted copy to Provision.',Provision:'Ink/clear the dues-in watch from receipted RV2 and send it to R&PS/CRS.',RPS:'Record acknowledgement-return progress and forward receipted RV2 to the consignor.',Consignor:'Receive receipted RV2 as proof that the receiving depot accepted the stores.'}[office];
+    if(id==='discrepancyReport'){
+      if(office==='ReceiptArea')return 'Segregate the discrepant stores and send the discrepancy facts and receipt evidence to the Sub-Depot Receipts Discrepancy Section.';
+      if(office==='ReceiptDiscrepancy')return secondVisit?'Apply the DAO-controlled decision, prepare the final clearance/settlement evidence and return the completed case to DAO.':'Prepare the Discrepancy Report in duplicate and the required adjustment papers, linking DRS/RV, quantity, condition and custody evidence.';
+      if(office==='DAO')return secondVisit?'Check the completed controlled action and forward the progressed discrepancy case to the consignor.':'Allot the discrepancy/adjustment control, decide the applicable claim or accounting action, and return the sanctioned direction to the Sub-Depot discrepancy section.';
+      return 'Receive the progressed discrepancy case and continue settlement against the controlled report; do not treat it as normal-stock closure.';
+    }
+    if(id==='adjustmentVoucher'){
+      return {ReceiptDiscrepancy:index===0?'Prepare the IAFO-2715 adjustment set in the prescribed copies and link it to the Discrepancy Report.':'Complete the DAO-authorised adjustment details and send the posting copy to CAB.',DAO:'Allot the adjustment control and authorise the accounting treatment supported by the discrepancy evidence.',CAB:'Post the authorised adjustment once, link it to RV1/loss evidence and file the controlled posting copy.'}[office];
+    }
+    if(id==='crvException'){
+      if(office==='ReceiptArea')return 'In an officer’s presence, prepare the CRV in triplicate from the available DRS, package markings/weights, Packing Notes, transit evidence and escort signature.';
+      if(office==='ReceiptControl')return 'Allot receipt control, mark CRV on DRS/RCRS and split the controlled CRV copies to their prescribed Accounts, R&PS/CRS and Progress holders.';
+      if(office==='ReceiptProgress')return secondVisit?'On receipt of the regular voucher, link it to the CRV, mark it NOT TO BE POSTED — FOR LINKING ONLY, and update the DRS/RCRS trap evidence.':'Retain the triplicate/trap evidence, demand the regular voucher and begin the prescribed hastening record.';
+      if(office==='CAB')return secondVisit?'Link the endorsed regular voucher to the already-posted CRV and prevent duplicate receipt posting.':'Post the original CRV once and record the account-card reference.';
+      return secondVisit?'Close by prescribed destruction/conversion after linking; if still unlinked at six months, escalate through BAOC/Army HQ with audit remarks.':'Hold the return/control copy while the regular voucher is being progressed.';
+    }
+    if(id==='ctcException'){
+      if(office==='ReceiptProgress')return secondVisit?'Clear the reconstructed RV1/CTC set after normal receipt action while preserving the retained trap-copy linkage.':'Convert the available RV2 to RV1, prepare two CTCs, mark the travelling copy identity boldly and retain the second CTC as the trap.';
+      return {ReceiptControl:'Allot receipt control and mark CTC in RCRS remarks, then return the reconstructed set through its prescribed route.',ReceiptArea:'Check the stores using the reconstructed RV1 and the travelling CTC acting as RV2.',ReceiptLiaison:'Carry and clear the reconstructed copies without treating the CTC as an original voucher.',Provision:'Complete dues-in clearance on the CTC acting as RV2.',RPS:'Verify the receipt/control evidence and forward the cleared travelling CTC.',CentralRegistry:'Register and despatch the cleared CTC to the consignor.',Consignor:'Accept the travelling CTC as the prescribed substitute receipt copy; the trap copy remains subject to later linkage/destruction.'}[office];
+    }
+    return `${officeIntel.Receipt[office].actions[0]} Apply that cited action specifically to ${character.name} before ${next?`the declared next holder receives it`:'its final evidence is retained'}.`;
+  }
+  function completeCharacterEvents(character){
+    return character.route.map((office,index)=>{
+      const action=character.procedure==='Issue'?issueStageAction(character,office,index):receiptStageAction(character,office,index);
+      const next=character.route[index+1],companion=character.procedure==='Issue'?issueBundle(character,office,index):receiptBundle(character,office);
+      const waiting=next?`After this action, ${character.name} continues to ${offices.find(item=>item.id===next).label}; other copies remain on their separately declared branches.`:`Final disposition: ${character.finalDisposition}. Closure proof: ${character.closureProof}.`;
+      return routeEvent(action,`This is the copy-specific ${offices.find(item=>item.id===office).label} action required to preserve ${character.closureProof}.`,companion,waiting,[character.id]);
+    });
+  }
+  characters.filter(character=>character.playable&&!characterStageEvents[character.id]).forEach(character=>{characterStageEvents[character.id]=completeCharacterEvents(character)});
+
   const mainCharacterIds={
     Issue:['demand','irpsOriginal','irpsDuplicate','iv1','iv2','iv3','iv4','iv5','iv6','stores','packingNoteOriginal','packingCompletionOriginal','trafficRegister','receiptedAcknowledgement','unitPadBundle'],
     Receipt:['receiptVoucher1','receiptVoucher2','drs1','drs2','drs3','rcrs1','rcrs2','rcrs3','rndorBulk','rndorDuesOut','receiptStoresBulk','receiptStoresDuesOut','receiptAccountPosting','discrepancyReport','receiptedRv2']

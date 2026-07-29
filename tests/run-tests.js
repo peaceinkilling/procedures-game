@@ -36,6 +36,16 @@ assert.strictEqual(data.characterStageEvents.receiptVoucher1.length,data.routes.
 assert.strictEqual(data.characterStageEvents.receiptVoucher2.length,data.routes.receiptVoucher2.length,'RV2 needs one exact state per route position.');
 assert.strictEqual(data.characterStageEvents.drs2.length,data.routes.drs2.length,'DRS2 needs one exact state per route position.');
 assert.match(data.characterStageEvents.drs2[1].waiting,/RN&DOR does not exist/i,'DRS2 initial Receipt Area state must explicitly teach that RN&DOR is not yet present.');
+for(const character of data.characters.filter(item=>item.playable)){
+  const stages=data.characterStageEvents[character.id];
+  assert.ok(stages,`${character.id} needs explicit copy-specific stage data.`);
+  assert.strictEqual(stages.length,character.route.length,`${character.id} needs one explicit stage record per route position.`);
+  stages.forEach((stage,index)=>{
+    for(const field of ['action','reason','companion','waiting'])assert.ok(stage[field]?.trim(),`${character.id} stage ${index+1} needs ${field}.`);
+    assert.ok(stage.documentIds?.includes(character.id),`${character.id} stage ${index+1} must identify the active entity in its exact bundle.`);
+    assert.doesNotMatch([stage.action,stage.companion,stage.waiting].join(' '),/as specified (?:by DGOSTI|at each cited transition)|process .*pass it onward|complete (?:its|the) cited/i,`${character.id} stage ${index+1} must not use a procedural placeholder.`);
+  });
+}
 assert.deepStrictEqual(data.formSchemas.rcrs.columns.map(column=>column[0]),['1','2','3','4','5','6','7','8','9'],'RCRS must reproduce all nine printed columns.');
 assert.ok(data.formSchemas.rcrs.events.ReceiptControl.fields.every(field=>Number(field)<=6||field==='9'),'Receipt Control must not invent completion of RCRS posting columns.');
 assert.deepStrictEqual(data.formSchemas.rcrs.events.CAB.fields,['7','8'],'CAB must show RCRS columns 7 then 8.');
@@ -100,6 +110,8 @@ assert.ok(html.includes('src/instrument-theme.css'),'The maintainable Procedures
 assert.ok(mapSource.includes("ctx.font='32px Segoe UI Emoji'"),'Office and branch icons on the playable map must remain enlarged for rapid recognition.');
 assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
 assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
+assert.ok(uiSource.includes('Exact bundle now')&&uiSource.includes('Action and evidence')&&uiSource.includes('After this desk'),'Copy-specific stage questions must expose the exact bundle, action and next custody picture.');
+assert.ok(!/Process \$\{game\.cargo\.name\} and pass it onward|Complete the cited final record action/.test(uiSource),'The UI must not restore generic process/pass-forward answers.');
 assert.ok(html.includes('id="challengeLevel"')&&html.includes('data-difficulty="easy"')&&html.includes('data-difficulty="difficult"'),'Arcade and Exam must expose three selectable challenge levels.');
 assert.ok(html.includes('id="characterChooser"')&&uiSource.includes("showCharacters=mission==='role'"),'The character roster must appear only for Character Campaign.');
 assert.ok(html.includes('data-roster-view="main"')&&html.includes('data-roster-view="all"')&&uiSource.includes('mainCharacterIds'),'The Hangar must separate principal characters from the complete source-reviewed roster.');
