@@ -98,6 +98,10 @@ assert.ok(!/<div class="canvas-wrap">[\s\S]*class="compass"/.test(html),'Compass
 assert.ok(html.indexOf('id="officeIntelCard"')>canvasIndex,'Office intelligence must remain outside the playable canvas.');
 assert.ok(/speed:3[6-9]\d/.test(engineSource),'Base character speed must remain at least 360 map units per second.');
 assert.ok(mainSource.includes("map.canvas.addEventListener('pointerup'")&&mainSource.includes('ui.showOfficeIntel'),'Pointer office selection must preserve the structured office dossier.');
+assert.ok(mainSource.includes("office.id===engine.game.route[engine.game.index]")&&mainSource.includes('engine.navigateToOffice(office.id)'),'Clicking the current objective office must auto-route and open it on desktop and touch devices.');
+assert.ok(engineSource.includes("lives:game.mode==='learn'?null:3")&&engineSource.includes("if(game.mode!=='learn')game.lives--"),'Learn mode must use unlimited attempts and never decrement lives.');
+assert.ok(uiSource.includes("game.mode==='learn'?'∞'"),'Learn mode must display unlimited practice instead of a life counter.');
+assert.ok(html.includes('Unlimited practice: mistakes explain the correct logic but never end the mission.'),'The Learn-mode card must explain unlimited attempts.');
 assert.ok(mapSource.includes("building(game.route[game.index],game.procedure)")&&uiSource.includes("map.building(game.route[game.index],game.procedure)"),'Receipt guidance arrows and compass must use the active procedure layout.');
 assert.ok(mainSource.includes("['1','2','3','4'].includes(event.key)")&&mainSource.includes("event.key==='i'"),'Every graded choice and nearest-office intelligence must be keyboard accessible.');
 assert.ok(uiSource.includes('updateRecordConsole')&&html.includes('id="recordConsole"'),'The live progressive document twin must remain outside the map.');

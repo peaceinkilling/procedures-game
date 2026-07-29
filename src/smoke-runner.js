@@ -78,6 +78,9 @@
   async function wrongOfficeProbe(){
     setScenario('iv1','learn','role');const game=root.DepotEngine.game,wrong=root.DepotMap.building('Traffic'),center=root.DepotMap.center(wrong);game.player.x=center.x;game.player.y=center.y;root.DepotEngine.interact();
     const message=document.getElementById('miniModal').innerText;if(!message.includes('correct destination is VOUCHER PREP')||!message.includes(root.DepotData.officeWhy.VoucherPrep))throw new Error('Wrong-office feedback did not identify and explain the correct destination');
+    if(game.lives!==null||!game.running)throw new Error('Learn mode must retain unlimited attempts after a wrong office');
+    for(let attempt=0;attempt<6;attempt++)root.DepotEngine.failMini('Guided correction');
+    if(game.lives!==null||!game.running)throw new Error('Learn mode ended after repeated guided mistakes');
     root.DepotUI.closeMini();root.DepotEngine.quitGame();return true;
   }
   async function officeIntelClickProbe(){
@@ -100,6 +103,14 @@
     if(!game.paused||document.getElementById('miniOverlay').classList.contains('hidden'))throw new Error('Tap-to-route did not auto-run and enter the selected office');
     root.DepotUI.closeMini();root.DepotEngine.quitGame();return true;
   }
+  async function desktopTargetClickProbe(){
+    setScenario('accountCardPosting','learn','role');const game=root.DepotEngine.game,office=root.DepotMap.building('CAB','Issue'),canvas=root.DepotMap.canvas,bounds=canvas.getBoundingClientRect();
+    canvas.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,pointerType:'mouse',clientX:bounds.left+(office.x+office.w/2)*bounds.width/root.DepotMap.width,clientY:bounds.top+(office.y+office.h/2)*bounds.height/root.DepotMap.height}));
+    for(let tries=0;tries<500&&!game.paused;tries++)await wait(10);
+    if(!game.paused||document.getElementById('miniOverlay').classList.contains('hidden'))throw new Error('Desktop click on the current objective did not auto-route and open the office');
+    if(document.getElementById('intelName').textContent!=='CAB / ACCOUNTS')throw new Error('Desktop objective click did not retain the office dossier');
+    root.DepotUI.closeMini();root.DepotEngine.quitGame();return true;
+  }
   async function reviewLabProbe(character){
     document.getElementById('procedureSelect').value=character.procedure;document.getElementById('procedureSelect').dispatchEvent(new Event('change',{bubbles:true}));root.DepotUI.selectCharacter(character.id);root.DepotEngine.startGame();
     const choices=[...document.querySelectorAll('#miniModal .choice')],correct=choices.find(button=>button.dataset.ok==='1');if(choices.length<4||!correct)throw new Error(`${character.id}: evidence lab did not present four review choices`);correctChoicePositions.push(choices.indexOf(correct));correct.click();await wait();
@@ -115,14 +126,14 @@
     root.DepotData.characters.filter(item=>item.playable).forEach(item=>specs.push({label:`${item.procedure} character / ${item.id}`,role:item.id,mode:'learn',mission:'role'}));
     const results=[],failures=[],reviewLabs=[];correctChoicePositions.length=0;
     try{
-      await officeIntelClickProbe();await wrongOfficeProbe();await contingencyGateProbe();await touchAutoRouteProbe();
+      await officeIntelClickProbe();await wrongOfficeProbe();await contingencyGateProbe();await touchAutoRouteProbe();await desktopTargetClickProbe();
       for(const character of root.DepotData.characters.filter(item=>item.reviewPlayable))reviewLabs.push(await reviewLabProbe(character));
       for(const spec of specs){
         report.textContent=`${results.length+failures.length}/${specs.length} complete\nRunning ${spec.label}`;
         try{results.push(await runScenario(spec))}catch(error){failures.push({label:spec.label,error:error.message});root.DepotEngine.quitGame()}
       }
     }finally{root.setTimeout=originalTimeout}
-    const positionVariety=new Set(correctChoicePositions).size;if(positionVariety<2)failures.push({label:'answer randomisation',error:'Correct choices did not move between positions'});const totals=results.reduce((sum,item)=>sum+item.steps,0),summary={status:failures.length?'FAIL':'PASS',scenarios:specs.length,passed:results.length,failed:failures.length,controlPointsExercised:totals,routeRecallChallenges:results.filter(item=>item.recall).length,evidenceReviewLabs:reviewLabs.length,correctAnswerPositions:[...new Set(correctChoicePositions)].sort(),officeIntelClickProbe:true,wrongOfficeExplanationProbe:true,contingencyGateProbe:true,touchAutoRouteProbe:true,procedures:[...new Set(results.map(item=>item.procedure))],modes:[...new Set(results.map(item=>item.mode))],failures};
+    const positionVariety=new Set(correctChoicePositions).size;if(positionVariety<2)failures.push({label:'answer randomisation',error:'Correct choices did not move between positions'});const totals=results.reduce((sum,item)=>sum+item.steps,0),summary={status:failures.length?'FAIL':'PASS',scenarios:specs.length,passed:results.length,failed:failures.length,controlPointsExercised:totals,routeRecallChallenges:results.filter(item=>item.recall).length,evidenceReviewLabs:reviewLabs.length,correctAnswerPositions:[...new Set(correctChoicePositions)].sort(),officeIntelClickProbe:true,desktopTargetClickProbe:true,wrongOfficeExplanationProbe:true,unlimitedLearnAttemptsProbe:true,contingencyGateProbe:true,touchAutoRouteProbe:true,procedures:[...new Set(results.map(item=>item.procedure))],modes:[...new Set(results.map(item=>item.mode))],failures};
     panel.dataset.status=failures.length?'fail':'pass';report.dataset.done='true';report.textContent=JSON.stringify(summary,null,2);root.__DEPOT_SMOKE__={summary,results};
   }
   document.getElementById('runSmokeMatrix').addEventListener('click',runMatrix);

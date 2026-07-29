@@ -11,7 +11,7 @@
 
   function formatTime(seconds){seconds=Math.max(0,Math.floor(seconds));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')}
   function routeStage(game,index=game.index){return game.mission==='campaign'?game.campaignStages[index]:game.characterStages?.[index]||data.characterStageEvents?.[game.role]?.[index]||null}
-  function updateHUD(game){byId('score').textContent=game.score;byId('combo').textContent=game.combo;byId('timer').textContent=formatTime(game.elapsed+game.penalty);byId('lives').textContent='♥'.repeat(Math.max(0,game.lives))+'♡'.repeat(Math.max(0,4-game.lives));byId('speed').textContent=Math.round(game.currentSpeed||game.player.speed);byId('speed').classList.toggle('boosting',!!game.boosting)}
+  function updateHUD(game){byId('score').textContent=game.score;byId('combo').textContent=game.combo;byId('timer').textContent=formatTime(game.elapsed+game.penalty);byId('livesLabel').textContent=game.mode==='learn'?'Practice':'Lives';byId('lives').textContent=game.mode==='learn'?'∞':'♥'.repeat(Math.max(0,game.lives))+'♡'.repeat(Math.max(0,3-game.lives));byId('lives').title=game.mode==='learn'?'Unlimited attempts in Learn mode':'Remaining attempts';byId('speed').textContent=Math.round(game.currentSpeed||game.player.speed);byId('speed').classList.toggle('boosting',!!game.boosting)}
   function activeDocumentIds(game){
     const stage=routeStage(game);
     return [...new Set(stage?.documentIds?.length?stage.documentIds:[game.role])].filter(id=>data.documentProfiles[id]);
