@@ -18,9 +18,24 @@ assert.deepStrictEqual(data.routes.receiptVoucher1.slice(0,4),['Consignor','Cent
 assert.ok(!data.receiptRouteVariants.receiptVoucher1NoDuesOut.includes('FPVRelease'),'RV1 without dues-out must bypass Further Part Voucher Release.');
 assert.ok(data.receiptRouteVariants.receiptVoucher1DuesOut.includes('FPVRelease'),'RV1 with dues-out must preserve Further Part Voucher Release.');
 assert.deepStrictEqual(data.routes.receiptVoucher2.slice(0,6),['ReceiptArea','ReceiptLiaison','ReceiptProgress','ReceiptLiaison','ReceiptControl','ReceiptArea'],'RV2 must return through Liaison between marriage and control.');
+assert.deepStrictEqual(data.routes.rndorDuesOut,['ReceiptLiaison','FPVRelease','ReceiptArea','DuesOutSuspense','ReceiptLiaison'],'Dues-out RN&DOR must expose both parallel destinations and return to Liaison.');
+const rndorFocusTransition=data.transitions.find(item=>item.characterId==='rndorDuesOut'&&item.from==='FPVRelease'&&item.to==='ReceiptArea');
+assert.strictEqual(rndorFocusTransition?.handoffType,'focus-switch','FPV Release to Receipt Area must be labelled as a parallel-copy focus switch, not a custody transfer.');
 assert.deepStrictEqual(data.routes.discrepancyReport,['ReceiptArea','ReceiptDiscrepancy','DAO','ReceiptDiscrepancy','DAO','Consignor'],'Receipt discrepancy control must return to the Sub-Depot for clearance before the completed case goes back through DAO.');
 assert.ok(data.campaigns.issueNormal.stages.some(stage=>stage.focus==='IV3 + IV4')&&data.campaigns.issueNormal.stages.some(stage=>stage.focus==='Returned IV2')&&data.campaigns.issueNormal.stages.some(stage=>stage.focus==='IV6'),'Full Issue must exercise every principal concurrent copy branch.');
 assert.ok(data.campaigns.receiptNormal.stages.some(stage=>stage.focus.includes('Advance RV1'))&&data.campaigns.receiptNormal.stages.some(stage=>stage.focus.includes('DRS1–3'))&&data.campaigns.receiptNormal.stages.some(stage=>stage.focus==='Receipted RV2'),'Full Receipt must distinguish advance, physical/DRS and acknowledgement streams.');
+const receiptStages=data.campaigns.receiptNormal.stages;
+const firstReceiptArea=receiptStages.find(stage=>stage.office==='ReceiptArea');
+assert.ok(firstReceiptArea.documentIds.includes('receiptVoucher2')&&firstReceiptArea.documentIds.includes('drs2'),'Initial Receipt Area must expose RV2 and DRS2.');
+assert.ok(!firstReceiptArea.documentIds.includes('receiptVoucher1')&&!firstReceiptArea.documentIds.includes('rndorBulk')&&!firstReceiptArea.documentIds.includes('rndorDuesOut'),'Initial Receipt Area must not show RV1 or an RN&DOR that does not yet exist.');
+const controlledReceiptArea=receiptStages.find((stage,index)=>stage.office==='ReceiptArea'&&index>receiptStages.indexOf(firstReceiptArea));
+assert.ok(!controlledReceiptArea.documentIds.includes('rndorBulk')&&!controlledReceiptArea.documentIds.includes('rndorDuesOut'),'Controlled checking must occur before RN&DOR preparation.');
+const rndorCreationStage=receiptStages.find(stage=>stage.office==='ReceiptLiaison'&&/prepare(?:\/check)? the required RN&DOR/i.test(stage.action));
+assert.ok(rndorCreationStage&&rndorCreationStage.documentIds.includes('rndorBulk')&&rndorCreationStage.documentIds.includes('rndorDuesOut'),'RN&DOR must first appear when Liaison prepares it after RV1 returns.');
+assert.strictEqual(data.characterStageEvents.receiptVoucher1.length,data.routes.receiptVoucher1.length,'RV1 needs one exact state per route position.');
+assert.strictEqual(data.characterStageEvents.receiptVoucher2.length,data.routes.receiptVoucher2.length,'RV2 needs one exact state per route position.');
+assert.strictEqual(data.characterStageEvents.drs2.length,data.routes.drs2.length,'DRS2 needs one exact state per route position.');
+assert.match(data.characterStageEvents.drs2[1].waiting,/RN&DOR does not exist/i,'DRS2 initial Receipt Area state must explicitly teach that RN&DOR is not yet present.');
 assert.deepStrictEqual(data.formSchemas.rcrs.columns.map(column=>column[0]),['1','2','3','4','5','6','7','8','9'],'RCRS must reproduce all nine printed columns.');
 assert.ok(data.formSchemas.rcrs.events.ReceiptControl.fields.every(field=>Number(field)<=6||field==='9'),'Receipt Control must not invent completion of RCRS posting columns.');
 assert.deepStrictEqual(data.formSchemas.rcrs.events.CAB.fields,['7','8'],'CAB must show RCRS columns 7 then 8.');
@@ -82,6 +97,11 @@ assert.ok(html.includes('By <b>Sahil(105)</b>'),'Creator credit must remain visi
 assert.ok(/<h1>Depot Run: Issue & Receipt<\/h1>\s*<div class="creator-mark"/.test(html),'Creator credit must sit beneath the Depot Run heading, not consume a separate HUD column.');
 assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
 assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
+assert.ok(html.includes('id="challengeLevel"')&&html.includes('data-difficulty="easy"')&&html.includes('data-difficulty="difficult"'),'Arcade and Exam must expose three selectable challenge levels.');
+assert.ok(html.includes('id="characterChooser"')&&uiSource.includes("showCharacters=mission==='role'"),'The character roster must appear only for Character Campaign.');
+assert.ok(html.includes('data-roster-view="main"')&&html.includes('data-roster-view="all"')&&uiSource.includes('mainCharacterIds'),'The Hangar must separate principal characters from the complete source-reviewed roster.');
+assert.ok(!/activeDocumentIds[\s\S]{0,500}officeDocumentSets/.test(uiSource),'Stage documents must come from exact lifecycle states, not office-wide document lists.');
+assert.ok(uiSource.includes("difficulty==='difficult'")&&uiSource.includes("difficulty==='easy'"),'Question generation must vary by selected challenge level.');
 assert.strictEqual(Object.keys(data.documentProfiles).length,data.characters.length,'Every playable Issue/Receipt entity needs a document profile.');
 for(const campaign of Object.values(data.campaigns))for(const stage of campaign.stages){
   assert.ok(stage.documentIds.length,`${campaign.procedure} stage at ${stage.office} needs at least one active document.`);

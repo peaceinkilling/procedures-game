@@ -10,13 +10,13 @@
   document.body.appendChild(panel);
 
   function selectCard(group,attribute,value){
-    document.querySelectorAll(`#${group} .option-card`).forEach(card=>card.classList.toggle('selected',card.dataset[attribute]===value));
+    document.querySelectorAll(`#${group} [data-${attribute}]`).forEach(card=>card.classList.toggle('selected',card.dataset[attribute]===value));
   }
-  function setScenario(role,mode,mission){
+  function setScenario(role,mode,mission,difficulty='medium'){
     const character=root.DepotData.characters.find(item=>item.id===role);
     document.getElementById('procedureSelect').value=character.procedure;
     document.getElementById('procedureSelect').dispatchEvent(new Event('change',{bubbles:true}));
-    root.DepotUI.selectCharacter(role);selectCard('modeGrid','mode',mode);selectCard('missionGrid','mission',mission);
+    root.DepotUI.selectCharacter(role);selectCard('modeGrid','mode',mode);selectCard('missionGrid','mission',mission);selectCard('difficultyGrid','difficulty',difficulty);
     root.DepotEngine.startGame();root.DepotEngine.game.sound=false;
   }
   function clickCorrect(game){
@@ -66,10 +66,10 @@
       }
       if(!document.getElementById('recallStatus').textContent.includes('Route Mastery earned'))throw new Error(`${label}: recall did not award mastery`);
     }
-    return{label,procedure:game.procedure,mode:game.mode,mission:game.mission,role:game.role,steps:expected.length,score:game.score,recall:exerciseRecall,route:expected};
+    return{label,procedure:game.procedure,mode:game.mode,difficulty:game.mode==='learn'?'guided':game.difficulty,mission:game.mission,role:game.role,steps:expected.length,score:game.score,recall:exerciseRecall,route:expected};
   }
   async function runScenario(spec){
-    setScenario(spec.role,spec.mode,spec.mission);
+    setScenario(spec.role,spec.mode,spec.mission,spec.difficulty);
     const result=await completeCurrentScenario(spec.label,!!spec.recall);
     root.DepotEngine.quitGame();return result;
   }
@@ -107,7 +107,8 @@
     const report=document.getElementById('smokeReport');panel.dataset.status='running';report.dataset.done='false';report.textContent='Running…';
     const originalTimeout=root.setTimeout;root.setTimeout=(callback,delay,...args)=>originalTimeout(callback,Math.min(Number(delay)||0,2),...args);
     const specs=[];
-    ['learn','arcade','exam'].forEach(mode=>{specs.push({label:`Issue full / ${mode}`,role:'iv1',mode,mission:'campaign',recall:mode==='learn'});specs.push({label:`Receipt full / ${mode}`,role:'advanceIssueVoucher',mode,mission:'campaign',recall:mode==='learn'})});
+    const levelByMode={learn:'medium',arcade:'easy',exam:'difficult'};
+    ['learn','arcade','exam'].forEach(mode=>{const difficulty=levelByMode[mode];specs.push({label:`Issue full / ${mode}${mode==='learn'?'':` / ${difficulty}`}`,role:'iv1',mode,mission:'campaign',difficulty,recall:mode==='learn'});specs.push({label:`Receipt full / ${mode}${mode==='learn'?'':` / ${difficulty}`}`,role:'advanceIssueVoucher',mode,mission:'campaign',difficulty,recall:mode==='learn'})});
     specs.push({label:'Issue random operation',role:'iv1',mode:'learn',mission:'random'},{label:'Receipt random operation',role:'advanceIssueVoucher',mode:'learn',mission:'random'});
     root.DepotData.characters.filter(item=>item.playable).forEach(item=>specs.push({label:`${item.procedure} character / ${item.id}`,role:item.id,mode:'learn',mission:'role'}));
     const results=[],failures=[],reviewLabs=[];correctChoicePositions.length=0;

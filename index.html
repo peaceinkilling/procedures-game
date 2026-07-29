@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Procedures Game — Issue & Receipt</title>
-  <link rel="stylesheet" href="src/styles.css">
+  <link rel="stylesheet" href="src/styles.css?v=20260729-1">
 </head>
 <body>
   <div class="app">
@@ -163,41 +163,53 @@
       <h2>Character Selection Hangar</h2>
       <p class="lead">All 53 Issue and Receipt entities are source-reviewed and playable. Each character teaches its complete office route, copy-specific purpose, concurrent records, closure evidence and final disposition. The IV2/IV5 source anomaly remains disclosed wherever it matters.</p>
 
-      <div class="section-title">1. Choose difficulty</div>
+      <div class="section-title">1. Choose learning mode</div>
       <div class="mode-grid" id="modeGrid">
         <button class="option-card selected" data-mode="learn" type="button"><div class="ico">🧭</div><b>Learn</b><span>Target office glows, compass stays visible, generous lives and full explanations.</span></button>
         <button class="option-card" data-mode="arcade" type="button"><div class="ico">⚡</div><b>Arcade</b><span>Less guidance, a faster penalty clock and combo scoring.</span></button>
         <button class="option-card" data-mode="exam" type="button"><div class="ico">🎯</div><b>Exam</b><span>No glowing target and no compass. Recall the route from memory.</span></button>
       </div>
 
-      <div class="section-title spaced">2. Choose operation</div>
-      <div class="mission-grid" id="missionGrid">
-        <button class="option-card selected" data-mission="campaign" type="button"><div class="ico">🏁</div><b>Full Issue Operation</b><span>Run the complete source-backed procedure through control, physical movement, accounts and closure.</span></button>
-        <button class="option-card" data-mission="role" type="button"><div class="ico">📜</div><b>Character Campaign</b><span>Master the selected entity’s complete source-reviewed lifecycle.</span></button>
-        <button class="option-card" data-mission="random" type="button"><div class="ico">🎲</div><b>Random Operation</b><span>Chooses from the playable source-reviewed roster and varies the scenario.</span></button>
+      <div class="challenge-level hidden" id="challengeLevel">
+        <div class="section-title spaced">2. Choose challenge level</div>
+        <div class="difficulty-grid" id="difficultyGrid">
+          <button class="difficulty-card" data-difficulty="easy" type="button"><b>Easy</b><span>Distinct choices and core sequence recognition.</span></button>
+          <button class="difficulty-card selected" data-difficulty="medium" type="button"><b>Medium</b><span>Related offices, documents and actions compete.</span></button>
+          <button class="difficulty-card" data-difficulty="difficult" type="button"><b>Difficult</b><span>Close procedural alternatives test custody, timing and logic.</span></button>
+        </div>
       </div>
 
-      <div class="hangar-head">
-        <div>
-          <div class="section-title" id="hangarTitle">3. Choose Issue character</div>
-          <p id="hangarSummary" class="tip"></p>
-        </div>
+      <div class="section-title spaced">3. Choose operation</div>
+      <div class="mission-grid" id="missionGrid">
+        <button class="option-card selected" data-mission="campaign" type="button"><div class="ico">🏁</div><b>Full Procedure</b><span>Run the selected Issue or Receipt procedure across every principal branch and closure.</span></button>
+        <button class="option-card" data-mission="role" type="button"><div class="ico">📜</div><b>Character Campaign</b><span>Master the selected entity’s complete source-reviewed lifecycle.</span></button>
+        <button class="option-card" data-mission="random" type="button"><div class="ico">🎲</div><b>Random Character</b><span>Chooses a source-reviewed character from the selected procedure.</span></button>
+      </div>
+
+      <div class="procedure-head">
+        <div class="section-title">4. Choose procedure</div>
         <label class="field">Procedure
           <select class="select" id="procedureSelect">
             <option value="Issue">Issue Procedure</option>
             <option value="Receipt">Receipt Procedure</option>
           </select>
         </label>
-        <label class="field">Filter roster
-          <select class="select" id="rosterFilter">
-            <option value="all">All Issue entities</option>
-            <option value="playable">Playable routes</option>
-            <option value="anomaly">Source-qualified rulings</option>
-          </select>
-        </label>
       </div>
-      <div class="hangar-grid" id="hangarGrid" aria-live="polite"></div>
-      <div class="selection-detail card" id="selectionDetail"></div>
+
+      <div class="character-chooser hidden" id="characterChooser">
+        <div class="hangar-head">
+          <div>
+            <div class="section-title" id="hangarTitle">5. Choose Issue character</div>
+            <p id="hangarSummary" class="tip"></p>
+          </div>
+          <div class="roster-tabs" role="tablist" aria-label="Character roster">
+            <button class="btn primary" data-roster-view="main" role="tab" aria-selected="true" type="button">Main characters</button>
+            <button class="btn" data-roster-view="all" role="tab" aria-selected="false" type="button">Show all</button>
+          </div>
+        </div>
+        <div class="hangar-grid" id="hangarGrid" aria-live="polite"></div>
+        <div class="selection-detail card" id="selectionDetail"></div>
+      </div>
       <input type="hidden" id="roleSelect" value="iv1">
       <div class="start-row">
         <div class="review-key"><span class="status-dot approved"></span> Source-reviewed and playable <span class="status-dot legacy"></span> Qualified ruling with disclosed source anomaly</div>
@@ -219,14 +231,14 @@
     </div>
   </div>
 
-  <script src="src/procedure-data.js"></script>
+  <script src="src/procedure-data.js?v=20260729-1"></script>
   <script src="src/map.js"></script>
-  <script src="src/ui.js"></script>
-  <script src="src/engine.js?v=20260726-2"></script>
+  <script src="src/ui.js?v=20260729-1"></script>
+  <script src="src/engine.js?v=20260729-1"></script>
   <script src="src/session.js?v=20260726-4"></script>
-  <script src="src/archive-data.js?v=20260726-1"></script>
+  <script src="src/archive-data.js?v=20260729-1"></script>
   <script src="src/archive.js?v=20260726-3"></script>
-  <script src="src/main.js"></script>
-  <script src="src/smoke-runner.js"></script>
+  <script src="src/main.js?v=20260729-1"></script>
+  <script src="src/smoke-runner.js?v=20260729-1"></script>
 </body>
 </html>

@@ -487,7 +487,7 @@
     ],[
       flow('ReceiptLiaison','Receipts Liaison Section','Prepares and sends one copy to FPV Release and remaining copies to Receipts Area.',receipt('Appendix F para 5(b)','PDF p.37')),
       flow('FPVRelease','FPV Release Cell','Links extracted FPV serials/date and sends vouchers to suspense.',receipt('Appendix K paras 3–4','PDF p.45')),
-      flow('ReceiptArea','Receipts Area','Sends dues-out stores with RN&DOR to suspense.',receipt('Appendix E para 11','PDF p.35')),
+      flow('ReceiptArea','Receipts Area','Parallel distribution branch from Liaison—not a hand-off from FPV Release. Sends dues-out stores with its RN&DOR copy to suspense.',receipt('Appendix E para 11; Appendix F para 5(b)','PDF pp.35, 37'),'conditional'),
       flow('DuesOutSuspense','Dues Out Suspense Area','Records temporary location, selects against FPVs and returns signed RN&DOR.',receipt('Appendix L','PDF p.46')),
       flow('ReceiptLiaison','Receipts Liaison Section','Marries and files the returned evidence.',receipt('Appendix F para 6','PDF pp.37–38'))
     ],'Complete receipted set filed by Receipts Liaison; FPV Release retains its acknowledged record copy.',[receipt('Appendices E, F, K and L','PDF pp.34–38, 45–46')]),

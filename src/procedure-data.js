@@ -61,7 +61,7 @@
     Provision:'Provision Branch marks dues-in on the advance voucher, later inks the entry from RV2, and sends it toward return.',
     TrafficReceipts:'Traffic Receipts registers transit papers, receives packages and prepares the Daily Receipt Sheet.',
     ReceiptProgress:'Receipts Progress links documents and actively watches clearance through the DRS register and RCRS.',
-    ReceiptArea:'Receipts Area opens and checks packages against receipt vouchers, then distributes stores using RN&DOR slips.',
+    ReceiptArea:'Receipts Area first receives packages with DRS1–3 and extracts RV2. After RV1/RV2/DRS2 are married and controlled, it checks the stores; only later, after Liaison prepares RN&DOR slips following MLRS/DOC review, does it distribute the stores.',
     ReceiptLiaison:'Receipt Liaison marries RV2, DRS2 and the advance RV1, obtains control, gathers location/dues-out data and prepares RN&DOR slips.',
     ReceiptControl:'Receipt Control allots the receipt control number using three RCRS copies.',
     FPVRelease:'The Further Part Voucher Release Cell extracts dues-out vouchers and releases them when RN&DOR evidence arrives.',
@@ -251,7 +251,7 @@
     rcrs2:['ReceiptControl','RPS'],
     rcrs3:['ReceiptControl','CAB'],
     rndorBulk:['ReceiptLiaison','ReceiptArea','BulkStore','ReceiptLiaison'],
-    rndorDuesOut:['ReceiptLiaison','ReceiptArea','DuesOutSuspense','ReceiptLiaison'],
+    rndorDuesOut:['ReceiptLiaison','FPVRelease','ReceiptArea','DuesOutSuspense','ReceiptLiaison'],
     receiptStoresBulk:['TrafficReceipts','ReceiptArea','BulkStore'],
     receiptStoresDuesOut:['TrafficReceipts','ReceiptArea','DuesOutSuspense','Packing'],
     binCardReceipt:['BulkStore'],
@@ -266,6 +266,7 @@
     receiptVoucher1NoDuesOut:['Consignor','CentralRegistry','Provision','ReceiptProgress','ReceiptLiaison','ReceiptControl','ReceiptArea','ReceiptLiaison','MLRS','DOC','ReceiptLiaison','ReceiptProgress','CAB'],
     receiptVoucher1DuesOut:receiptRoutes.receiptVoucher1
   };
+  const characterFocusSwitches={rndorDuesOut:[1]};
   const legacyFullReceiptRoute=['Consignor','CentralRegistry','Provision','ReceiptProgress','TrafficReceipts','ReceiptArea','ReceiptLiaison','ReceiptProgress','ReceiptControl','ReceiptArea','ReceiptLiaison','MLRS','DOC','FPVRelease','ReceiptLiaison','ReceiptArea','BulkStore','ReceiptLiaison','ReceiptProgress','CAB','Provision','RPS','Consignor'];
   Object.assign(routes,receiptRoutes);
   characters.push(
@@ -326,17 +327,17 @@
     campaignStage('Provision','Advance RV1','Dues-in marked in pencil','Mark dues-in from the advance voucher and pass it to Receipts Progress.','The advance copy creates the watch before stores documents arrive.','Advance RV1.','Transit papers and consignment continue through Traffic Receipts.'),
     campaignStage('ReceiptProgress','Advance RV1','Held in consignor pad awaiting stores copy','File the advance voucher in the consignor pad and actively await the stores copy for marriage.','It is a waiting control record, not yet a receipt-posting voucher.','Advance RV1 waits here.','The physical/transit stream is handled separately by Traffic Receipts.','focus-switch'),
     campaignStage('TrafficReceipts','Consignment + transit papers + DRS1–3','Transit registered and DRS prepared','Register the transit paper, inspect package condition, prepare a separate three-copy DRS and deliver stores with DRS2 while obtaining acknowledgement on DRS1/DRS3.','DRS1 stays with Traffic evidence; DRS3 goes to Receipts Progress.','Packages and DRS2 move to Receipts Area.','DRS1 is retained; DRS3 separately moves to Receipts Progress.'),
-    campaignStage('ReceiptArea','Packages + DRS2','Packages taken over for checking','Acknowledge DRS delivery, open packages as prescribed and present RV2/DRS2 for Liaison linking.','Physical condition and quantity evidence must be preserved before distribution.','Packages, stores, RV2 and DRS2.','Advance RV1 remains in Receipts Progress.'),
+    campaignStage('ReceiptArea','Packages + DRS1–3','Packages taken over; RV2 extracted','Check the packages against DRS1–3, acknowledge DRS1/DRS3, extract RV2 from Package No.1 and send RV2 with DRS2 through Liaison for marriage and control.','The first Receipts Area visit is package takeover and document extraction; RN&DOR slips do not yet exist.','Packages, stores, RV2 and DRS2 remain the active arrival bundle.','DRS1 returns to Traffic, DRS3 goes to Receipts Progress, and advance RV1 waits there.'),
     campaignStage('ReceiptLiaison','RV2 + DRS2','Package copy extracted and linked','Extract RV2 from Package No.1, link it with DRS2 and take the set to Receipts Progress.','Liaison joins the arriving stores papers with the waiting advance copy.','RV2 and DRS2.','Stores remain under Receipts Area custody.'),
     campaignStage('ReceiptProgress','RV1 + RV2 + DRS2','Advance and stores copies married','Marry RV2/DRS2 with the waiting RV1 and hand the linked set back to Liaison for control.','All subsequent control must refer to the same receipt transaction.','Linked RV1/RV2/DRS2 set.','DRS3 separately watches progress.'),
     campaignStage('ReceiptLiaison','Linked receipt set','Carried to Receipt Control','Present the linked documents to Receipt Control Registry and preserve copy identity.','Liaison is the courier/coordinator between progress, control and the physical area.','RV1, RV2 and DRS2.','Stores wait in Receipts Area.'),
     campaignStage('ReceiptControl','RV1 + RV2 + DRS2 + RCRS1–3','Receipt control number allotted','Allot the receipt control number; split RCRS1 to Receipts Progress, RCRS2 to R&PS/CRS and RCRS3 to CAB; return the controlled receipt set to Receipts Area.','Three independent watchers now track clearance, acknowledgement and posting.','Controlled RV1/RV2/DRS2 return to Receipts Area.','RCRS copies simultaneously move to their three holders.'),
     campaignStage('ReceiptArea','Controlled receipt set + stores','Designation, quantity and condition checked','Check stores against the controlled receipt vouchers and identify normal-stock, dues-out or discrepancy outcomes.','This is the physical acceptance gate.','Checked stores and receipt documents.','Any discrepancy must branch to the dedicated discrepancy procedure.'),
-    campaignStage('ReceiptLiaison','RV1 + checked receipt evidence','Location/dues-out review initiated','Send RV1 for MLRS location marking and DOC review while coordinating RN&DOR preparation.','Receipt documents now direct the physical distribution.','RV1.','RV2 and DRS2 remain linked for later progress clearance.'),
+    campaignStage('ReceiptLiaison','RV1 + checked receipt evidence','Location/dues-out review initiated','Hold RV2 and DRS2 in the “Awaiting RV1 from DOC” folder; send RV1 to MLRS and then DOC. Do not prepare RN&DOR yet.','DGOSTI requires location and dues-out decisions before Liaison can prepare the RN&DOR distribution set.','RV1 alone moves to MLRS.','RV2 and DRS2 wait together at Liaison; the stores remain in Receipts Area.'),
     campaignStage('MLRS','RV1','Section, identity and shed/area location checked','Check section, part/catalogue number and designation; mark the storage location on RV1.','Correct location prevents mis-binning and wrong stock records.','RV1.','Stores remain in Receipts Area.'),
     campaignStage('DOC','RV1','Dues-out quantities reviewed','Review each item against Dues Out Cards and mark quantities requiring release.','A receipt may split between normal stock and dues-out suspense.','RV1.','Normal stock and dues-out quantities remain physically distinguishable.'),
-    campaignStage('FPVRelease','RV1 + Further Part Vouchers','Dues-out authority extracted','Extract and control the relevant Further Part Vouchers, then return RV1 to Liaison; hold vouchers until RN&DOR evidence arrives.','Dues-out stock cannot be released merely because it is available.','RV1 returns to Liaison.','Further Part Vouchers wait in the release pad.'),
-    campaignStage('ReceiptLiaison','RV1 + RN&DOR slips','Distribution authority prepared','Prepare separate RN&DOR evidence for Bulk/Detail and Dues-out destinations and send it to Receipts Area.','RN&DOR preserves destination and return evidence for each branch.','RN&DOR slips and checked receipt set.','RCRS copies continue to watch clearance.'),
+    campaignStage('FPVRelease','RV1 + Further Part Vouchers','Dues-out authority extracted','Extract the relevant Further Part Vouchers, stamp RV1 “DOC”, return RV1 to Liaison and hold the vouchers in the “Awaiting RN&DOR Slips” pad.','The vouchers are extracted before the RN&DOR exists; they are not released until the Liaison copy subsequently arrives.','RV1 returns to Liaison.','Further Part Vouchers wait here for the RN&DOR copy.'),
+    campaignStage('ReceiptLiaison','RV1 + RV2 + DRS2; RN&DOR created now','RN&DOR distribution set prepared and split','Re-marry returned RV1 with RV2, prepare/check the required RN&DOR copies, stamp RV1/RV2 with the preparation date, send RV1/RV2/DRS2 to Receipts Progress, send one dues-out RN&DOR copy to FPV Release, and send the distribution copies to Receipts Area.','This is the first stage at which RN&DOR slips exist; their copies now divide by destination.','Distribution RN&DOR copies move to Receipts Area.','The FPV Release copy moves separately to DOC; RV1/RV2/DRS2 move to Receipts Progress.'),
     campaignStage('ReceiptArea','Stores + RN&DOR','Stores distributed by outcome','Send normal stock to Bulk/Detail Store and dues-out stock to Dues-out Suspense; do not mix discrepancy stock into either branch.','Physical custody now divides according to the authorised receipt outcome.','Operational focus follows the bulk-stock branch.','Dues-out stores simultaneously move to suspense.'),
     campaignStage('BulkStore','Normal stock + bulk RN&DOR','Binned/stacked and bin card posted','Bin or stack cleared stores, post the bin card and return the receipted RN&DOR to Liaison.','Stock is not fully received until both physical location and record posting agree.','Receipted bulk RN&DOR returns to Liaison.','Dues-out stock remains under suspense control.'),
     campaignStage('ReceiptLiaison','Receipted bulk RN&DOR','Bulk branch evidence closed','Check and file the returned bulk RN&DOR against the receipt control.','This proves normal stock reached its destination and record.','Bulk RN&DOR evidence.','Dues-out release continues independently.','focus-switch'),
@@ -360,7 +361,7 @@
     const supported=character&&character.routeStatus==='approved';
     return ({
     id:`${characterId}:${index}:${from}->${route[index+1]}`,
-    characterId,from,to:route[index+1],support:supported?'primary-supported':'prototype-unverified',primarySourceRef:supported?character.primarySourceRefs.join('; '):null,domainReview:!supported
+    characterId,from,to:route[index+1],support:supported?'primary-supported':'prototype-unverified',handoffType:characterFocusSwitches[characterId]?.includes(index)?'focus-switch':'custody',primarySourceRef:supported?character.primarySourceRefs.join('; '):null,domainReview:!supported
   });}));
   const campaignTransitions=Object.entries(campaigns).flatMap(([campaignId,campaign])=>campaign.route.slice(0,-1).map((from,index)=>({id:`${campaignId}:${index}:${from}->${campaign.route[index+1]}`,characterId:campaignId,from,to:campaign.route[index+1],support:'primary-supported',handoffType:campaign.stages[index].handoffToNext,primarySourceRef:campaign.primarySourceRefs.join('; '),domainReview:false})));
   const variantTransitions=receiptRouteVariants.receiptVoucher1NoDuesOut.slice(0,-1).map((from,index)=>({id:`receiptVoucher1:no-dues:${index}:${from}->${receiptRouteVariants.receiptVoucher1NoDuesOut[index+1]}`,characterId:'receiptVoucher1',from,to:receiptRouteVariants.receiptVoucher1NoDuesOut[index+1],support:'primary-supported',primarySourceRef:'DGOSTI-001 Appendices F, G, J, K and O (PDF pp.36–53)',domainReview:false}));
@@ -635,22 +636,112 @@
       RPS:['receiptVoucher2','drs3','rcrs2'],ReceiptDiscrepancy:['discrepancyReport','adjustmentVoucher'],DAO:['discrepancyReport','adjustmentVoucher']
     }
   };
-  function stageDocumentIds(stage,procedure){
-    const ids=[...(officeDocumentSets[procedure]?.[stage.office]||[])],text=`${stage.focus} ${stage.companion} ${stage.waiting}`.toLowerCase();
-    const candidates=characters.filter(item=>item.procedure===procedure);
-    for(const character of candidates){
-      const aliases=[character.name.toLowerCase(),character.id.toLowerCase()];
-      if(aliases.some(alias=>alias.length>3&&text.includes(alias)))ids.push(character.id);
-    }
-    return [...new Set(ids)].filter(id=>documentProfiles[id]);
-  }
-  issueCampaignStages.forEach(stage=>stage.documentIds=stageDocumentIds(stage,'Issue'));
-  receiptCampaignStages.forEach(stage=>stage.documentIds=stageDocumentIds(stage,'Receipt'));
+  const campaignDocumentIds={
+    Issue:[
+      ['demand'],['demand'],['demand','irpsOriginal','irpsDuplicate'],['demand','irpsOriginal','irpsDuplicate'],
+      ['demand','irpsOriginal','irpsDuplicate','scheduleOfIndents'],['demand','irpsOriginal','irpsDuplicate','scheduleOfIndents'],
+      ['irpsOriginal'],['demand','irpsDuplicate','iv1','iv2','iv3','iv4','iv5','iv6'],['demand','irpsOriginal'],
+      ['irpsDuplicate','iv1','iv2','iv3','iv4','iv5','iv6'],['iv1','iv2','iv3','iv4','iv5','iv6'],
+      ['iv1','iv2','iv3','iv4','iv5','iv6'],['stores','iv1','iv2','iv3','iv4','iv5','iv6','binCardSelection'],
+      ['irpsDuplicate','iv3','iv4'],['iv3','iv4','accountCardPosting'],['iv3'],
+      ['stores','iv1','iv2','iv5','iv6','packingNoteOriginal','packingNoteDuplicate','packingCompletionOriginal','packingCompletionDuplicate'],
+      ['irpsDuplicate','iv5'],['irpsOriginal','iv5'],['iv5'],['stores','iv1','iv2','iv6','trafficRegister'],
+      ['stores','iv2'],['irpsOriginal','iv2'],['demand','irpsOriginal','iv6'],['iv6'],['demand','irpsOriginal','iv6','unitPadBundle']
+    ],
+    Receipt:[
+      ['receiptVoucher1','receiptVoucher2'],['receiptVoucher1'],['receiptVoucher1'],['receiptVoucher1'],
+      ['receiptVoucher2','drs1','drs2','drs3','receiptStoresBulk'],['receiptVoucher2','drs1','drs2','drs3','receiptStoresBulk'],
+      ['receiptVoucher2','drs2'],['receiptVoucher1','receiptVoucher2','drs2','drs3'],['receiptVoucher1','receiptVoucher2','drs2'],
+      ['receiptVoucher1','receiptVoucher2','drs2','rcrs1','rcrs2','rcrs3'],
+      ['receiptVoucher1','receiptVoucher2','drs2','receiptStoresBulk'],['receiptVoucher1','receiptVoucher2','drs2'],
+      ['receiptVoucher1'],['receiptVoucher1'],['receiptVoucher1'],
+      ['receiptVoucher1','receiptVoucher2','drs2','rndorBulk','rndorDuesOut'],
+      ['rndorBulk','rndorDuesOut','receiptStoresBulk','receiptStoresDuesOut'],
+      ['rndorBulk','receiptStoresBulk','binCardReceipt'],['rndorBulk'],
+      ['rndorDuesOut','receiptStoresDuesOut'],['rndorDuesOut'],['receiptStoresDuesOut','iv1','iv2','iv5','iv6'],
+      ['receiptVoucher1','receiptVoucher2','drs2','drs3','rcrs1'],['receiptVoucher1','rcrs3','receiptAccountPosting'],
+      ['receiptVoucher2'],['receiptVoucher2','drs3','rcrs2'],['receiptVoucher2']
+    ]
+  };
+  issueCampaignStages.forEach((stage,index)=>stage.documentIds=campaignDocumentIds.Issue[index]);
+  receiptCampaignStages.forEach((stage,index)=>stage.documentIds=campaignDocumentIds.Receipt[index]);
+
+  const routeEvent=(action,reason,companion,waiting,documentIds,handoffToNext='custody',focus='')=>({action,reason,companion,waiting,documentIds,handoffToNext,focus});
+  const characterStageEvents={
+    receiptVoucher1:[
+      routeEvent('Dispatch RV1 in advance to the receiving depot.','RV1 starts as the advance copy; it is not inside the consignment.','RV1.','RV2 travels inside Package No.1.',['receiptVoucher1']),
+      routeEvent('Date-stamp RV1 and send it to Provision.','Central Registry separates the voucher and transit streams.','RV1.','Transit papers go separately to Traffic Receipts.',['receiptVoucher1']),
+      routeEvent('Post the dues-in watch and send RV1 to Receipts Progress.','The advance copy opens control before stores arrive.','RV1.','The consignment continues independently.',['receiptVoucher1']),
+      routeEvent('File RV1 in the consignor pad until RV2 and DRS2 arrive; then release it through Liaison.','RV1 waits here and is not yet posted.','RV1.','RV2 and DRS2 must arrive before marriage.',['receiptVoucher1']),
+      routeEvent('Carry the married RV1/RV2/DRS2 set to Receipts Control.','Liaison preserves the linked transaction.','RV1, RV2 and DRS2.','Stores remain in Receipts Area.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Allot the receipt control number and return the set to Receipts Area.','Control precedes physical receipt checking.','RV1, RV2 and DRS2.','RCRS1–3 split to three prescribed holders.',['receiptVoucher1','receiptVoucher2','drs2','rcrs1','rcrs2','rcrs3']),
+      routeEvent('Check stores against the controlled vouchers; send the checked papers to Liaison.','RN&DOR does not yet exist at this stage.','RV1, RV2 and DRS2.','Stores remain in Receipts Area.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Hold RV2/DRS2 and send RV1 alone to MLRS.','Location and dues-out decisions must precede RN&DOR preparation.','RV1.','RV2 and DRS2 wait in the “Awaiting RV1 from DOC” folder.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Verify identity and mark the shed/area location on RV1.','Location must be established before distribution.','RV1.','RV2/DRS2 wait at Liaison.',['receiptVoucher1']),
+      routeEvent('Review RV1 against Dues Out Cards and mark any release quantity.','DOC decides whether FPV Release is required.','RV1.','RN&DOR has not been prepared.',['receiptVoucher1']),
+      routeEvent('Extract Further Part Vouchers, stamp RV1 and return it to Liaison.','This visit occurs only where dues-out release is required.','RV1.','Further Part Vouchers wait for the later RN&DOR copy.',['receiptVoucher1']),
+      routeEvent('Re-marry RV1/RV2, prepare RN&DOR, stamp the vouchers and send RV1/RV2/DRS2 to Receipts Progress.','RN&DOR is created only after RV1 returns from MLRS/DOC and conditional FPV extraction.','RV1, RV2 and DRS2.','RN&DOR copies split separately to FPV Release and Receipts Area.',['receiptVoucher1','receiptVoucher2','drs2','rndorBulk','rndorDuesOut']),
+      routeEvent('Sign and split the cleared papers: RV1 to CAB, RV2 to Provision; file DRS2.','Posting and acknowledgement now close on separate branches.','RV1.','RV2 goes to Provision; DRS2 remains filed here.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Post, check and file RV1 by receipt-control number.','CAB is RV1’s final destination.','RV1 and posting evidence.','RV2 continues independently to the consignor.',['receiptVoucher1','rcrs3','receiptAccountPosting'])
+    ],
+    receiptVoucher2:[
+      routeEvent('Extract RV2 from Package No.1 and send it with DRS2 through Liaison.','RV2 first becomes active at Receipts Area.','RV2 and DRS2.','RV1 waits in Receipts Progress; RN&DOR does not exist.',['receiptVoucher2','drs2']),
+      routeEvent('Carry RV2/DRS2 to Receipts Progress.','The stores-side papers must meet advance RV1.','RV2 and DRS2.','Stores remain in Receipts Area.',['receiptVoucher2','drs2']),
+      routeEvent('Marry RV2/DRS2 with RV1 and return the set through Liaison.','All three documents need one control identity.','RV1, RV2 and DRS2.','DRS3 watches separately.',['receiptVoucher1','receiptVoucher2','drs2','drs3']),
+      routeEvent('Carry the linked set to Receipts Control.','Liaison is the controlled courier.','RV1, RV2 and DRS2.','Stores wait in Receipts Area.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Allot control and return the linked documents to Receipts Area.','The RCRS copies split here.','RV1, RV2 and DRS2.','RCRS1–3 move to separate holders.',['receiptVoucher1','receiptVoucher2','drs2','rcrs1','rcrs2','rcrs3']),
+      routeEvent('Check stores against RV2 and note any discrepancy.','RN&DOR is still not present during controlled checking.','RV1, RV2 and DRS2.','Discrepant items take their separate route.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Hold RV2/DRS2 while RV1 visits MLRS/DOC; clear the papers only after RV1 returns and RN&DOR is prepared.','RV2 never travels to MLRS or DOC.','RV2 and DRS2.','RV1 travels alone.',['receiptVoucher1','receiptVoucher2','drs2','rndorBulk','rndorDuesOut']),
+      routeEvent('Obtain the authorised receipt signature and send RV2 to Provision.','RV2 now begins its acknowledgement-return branch.','Receipted RV2.','RV1 moves separately to CAB.',['receiptVoucher2']),
+      routeEvent('Ink/clear dues-in and send receipted RV2 to R&PS/CRS.','Provision closes its advance watch.','Receipted RV2.','RV1 remains in CAB.',['receiptVoucher2']),
+      routeEvent('Record return progress and forward RV2 to the consignor.','R&PS/CRS controls acknowledgement return.','Receipted RV2.','RCRS2 remains as progress evidence.',['receiptVoucher2','rcrs2']),
+      routeEvent('Receive the receipted RV2.','The acknowledgement returns to its originator.','Receipted RV2.','CAB retains RV1.',['receiptVoucher2'])
+    ],
+    drs2:[
+      routeEvent('Prepare DRS2 with DRS1/DRS3 and deliver the packages to Receipts Area.','Traffic Receipts originates the DRS set.','DRS1, DRS2, DRS3 and packages.','RV1 waits in Receipts Progress.',['drs1','drs2','drs3','receiptVoucher2']),
+      routeEvent('Take over packages, retain DRS2 and send it with extracted RV2 through Liaison.','This first visit is before control, full checking and RN&DOR.','DRS2 and RV2.','DRS1 returns to Traffic; DRS3 goes to Progress; RN&DOR does not exist.',['drs1','drs2','drs3','receiptVoucher2']),
+      routeEvent('Carry DRS2/RV2 to Receipts Progress.','They must be married with advance RV1.','DRS2 and RV2.','Stores stay in Receipts Area.',['drs2','receiptVoucher2']),
+      routeEvent('Marry DRS2/RV2 with RV1 and return the set through Liaison.','All three documents need one control identity.','RV1, RV2 and DRS2.','DRS3 remains separate.',['receiptVoucher1','receiptVoucher2','drs2','drs3']),
+      routeEvent('Carry the linked set to Receipts Control.','Liaison preserves document custody.','RV1, RV2 and DRS2.','Stores remain in Receipts Area.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Enter the receipt control number on DRS2 and return it to Receipts Area.','Control precedes physical checking.','RV1, RV2 and DRS2.','RCRS1–3 split.',['receiptVoucher1','receiptVoucher2','drs2','rcrs1','rcrs2','rcrs3']),
+      routeEvent('Use controlled DRS2 during checking; then pass DRS2/RV1/RV2 to Liaison.','RN&DOR has still not been prepared.','RV1, RV2 and DRS2.','Stores await distribution.',['receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Hold DRS2/RV2 while RV1 visits MLRS/DOC; after its return, record RN&DOR completion and send DRS2 to Progress.','DRS2 never travels to MLRS/DOC.','DRS2 and RV2.','RV1 moves alone; RN&DOR is created only on its return.',['receiptVoucher1','receiptVoucher2','drs2','rndorBulk','rndorDuesOut']),
+      routeEvent('Enter receipt in the Sub-Depot DRS register and file DRS2 serially.','DRS2 closes in Receipts Progress.','DRS2.','DRS3 separately proceeds to R&PS/CRS.',['drs2'])
+    ],
+    rndorBulk:[
+      routeEvent('Prepare/check the Bulk/Detail RN&DOR copies and send distribution copies to Receipts Area.','The slip is created after RV1 returns from MLRS/DOC.','Bulk/Detail RN&DOR set.','RV1/RV2/DRS2 move to Receipts Progress.',['rndorBulk']),
+      routeEvent('Marry RN&DOR with stores; return the signed original and send a destination copy with the stores.','Receipt Area divides immediate return evidence from the delivery copy.','Stores and the destination copy.','The signed original returns to Liaison.',['rndorBulk','receiptStoresBulk']),
+      routeEvent('Check, locate and bin/stack stores; post the Bin Card and return the receipted copy.','The location, Bin Card serial and signature prove stock receipt.','Receipted RN&DOR.','Stores remain in stock.',['rndorBulk','receiptStoresBulk','binCardReceipt']),
+      routeEvent('Marry all returned copies and file the complete set.','Liaison closes the evidence after every copy returns.','Complete RN&DOR set.','No copy remains in transit.',['rndorBulk'])
+    ],
+    rndorDuesOut:[
+      routeEvent('Prepare/check the set; send one copy to FPV Release and remaining copies to Receipts Area.','The RN&DOR copies divide at Liaison.','Focus follows the FPV Release copy.','Distribution copies simultaneously go to Receipts Area.',['rndorDuesOut']),
+      routeEvent('Match the copy to extracted Further Part Vouchers, endorse serials/date and send the vouchers to Suspense.','The next step switches to a distribution copy already at Receipts Area; it is not sent there by FPV Release.','FPV Release copy and extracted vouchers.','Distribution copies are already at Receipts Area.',['rndorDuesOut'],'focus-switch','Distribution copy'),
+      routeEvent('Marry the distribution copy with dues-out stores and send both to Suspense.','This copy came directly from Liaison.','Dues-out stores and RN&DOR.','Further Part Vouchers arrive separately from FPV Release.',['rndorDuesOut','receiptStoresDuesOut']),
+      routeEvent('Record location, select against Further Part Vouchers and return signed RN&DOR evidence.','Suspense releases only authorised quantities.','Receipted RN&DOR.','Released stores continue to Packing.',['rndorDuesOut','receiptStoresDuesOut']),
+      routeEvent('Marry returned evidence and file the completed set.','Liaison closes the split trails.','Completed RN&DOR set.','Released stores are in the Issue stream.',['rndorDuesOut'])
+    ],
+    receiptStoresBulk:[
+      routeEvent('Deliver the packages with DRS1–3 to Receipts Area.','Traffic starts physical receipt custody.','Packages and DRS1–3.','RV1 follows the advance route.',['receiptStoresBulk','drs1','drs2','drs3']),
+      routeEvent('Hold stores through RV marriage/control and checking; wait for RN&DOR after MLRS/DOC.','Stores do not move directly to Bulk/Detail on initial arrival.','Checked stores remain here.','RV1 travels through MLRS/DOC; RN&DOR is not yet available.',['receiptStoresBulk','receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Receive against RN&DOR, bin/stack and post the Bin Card.','This is the physical stock destination.','Stores and Bulk/Detail RN&DOR.','Receipted RN&DOR returns to Liaison.',['receiptStoresBulk','rndorBulk','binCardReceipt'])
+    ],
+    receiptStoresDuesOut:[
+      routeEvent('Deliver the packages with DRS1–3 to Receipts Area.','Traffic starts physical receipt custody.','Packages and DRS1–3.','RV1 follows the advance route.',['receiptStoresDuesOut','drs1','drs2','drs3']),
+      routeEvent('Hold/check stores through document control; move dues-out quantity only after RN&DOR exists.','Stores cannot enter Suspense on first arrival.','Checked dues-out quantity remains here.','RN&DOR and FPV trails are prepared separately.',['receiptStoresDuesOut','receiptVoucher1','receiptVoucher2','drs2']),
+      routeEvent('Hold separately and select only against released Further Part Vouchers.','Suspense is controlled waiting, not normal stock.','Dues-out stores, RN&DOR and Further Part Vouchers.','Any unreleased balance remains.',['receiptStoresDuesOut','rndorDuesOut']),
+      routeEvent('Pass released stores with IV1, IV2, IV5 and IV6 into Issue packing.','This is the Receipt-to-Issue hand-off.','Released stores and Issue Voucher copies.','IV3/IV4 go separately to SDIC/Accounts.',['receiptStoresDuesOut','iv1','iv2','iv5','iv6'])
+    ]
+  };
+  const mainCharacterIds={
+    Issue:['demand','irpsOriginal','irpsDuplicate','iv1','iv2','iv3','iv4','iv5','iv6','stores','packingNoteOriginal','packingCompletionOriginal','trafficRegister','receiptedAcknowledgement','unitPadBundle'],
+    Receipt:['receiptVoucher1','receiptVoucher2','drs1','drs2','drs3','rcrs1','rcrs2','rcrs3','rndorBulk','rndorDuesOut','receiptStoresBulk','receiptStoresDuesOut','receiptAccountPosting','discrepancyReport','receiptedRv2']
+  };
 
   return {
     procedure:'Issue and Receipt',
     receiptImplemented:true,
-    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,officeSituations,formSchemas,formByRole,documentProfiles,officeDocumentSets,
+    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,characterFocusSwitches,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,officeSituations,formSchemas,formByRole,documentProfiles,officeDocumentSets,characterStageEvents,mainCharacterIds,
     roleInfo:legacy,
     mapOfficeIds:{Issue:['DemandingUnit','HQ','ISS','ULC','IndentChecking','ICR','VoucherPrep','SDIC','DOC','MLRS','Selection','Packing','Traffic','CentralRegistry','CAB','SM','RPS','LAO'],Receipt:['Consignor','CentralRegistry','Provision','TrafficReceipts','ReceiptProgress','ReceiptArea','ReceiptLiaison','ReceiptControl','MLRS','DOC','FPVRelease','DuesOutSuspense','BulkStore','Packing','ReceiptDiscrepancy','DAO','CAB','RPS']},
     sourcePolicy:{primary:['RAOS Part II','DGOSTI-002','DGOSTI-001'],providedPrimaryExtracts:true,sourceMap:'docs/PROCEDURE_SOURCE_MAP.md'}

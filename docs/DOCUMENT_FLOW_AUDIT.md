@@ -1,6 +1,6 @@
 # DGOSTI document-flow audit
 
-Audit date: 25 July 2026
+Audit date: 29 July 2026
 
 Primary texts checked:
 
@@ -20,6 +20,8 @@ One game-flow correction was required during this audit: RV No.1 must not visit 
 - dues-out: DOC → FPV Release → Receipt Liaison.
 
 The full Receipt operation deliberately exercises both normal-stock and dues-out branches, and labels changes of operational focus so they are not mistaken for custody hand-offs.
+
+A second display-state correction removed office-wide document inference. The first Receipts Area visit now shows DRS1–3, RV2 and the physical packages only; it cannot show RV1 or RN&DOR. RV1 reaches Receipts Area only after marriage and receipt control. Receipt Liaison prepares RN&DOR only after RV1 returns from MLRS/DOC and the conditional FPV-extraction leg. For dues-out distribution, the FPV Release copy and the Receipts Area copies are parallel branches from Liaison; the transition between them is explicitly a focus switch, not document custody.
 
 ## Issue document families
 
@@ -51,4 +53,3 @@ The full Receipt operation deliberately exercises both normal-stock and dues-out
 - RCRS: all nine printed columns from DGOSTI-001 Annexure 12, including the three sub-actions printed within column 7 and the distinct posting date in column 8.
 
 The simulator highlights a column only where the cited office action supports it. It uses “UPDATE NOW” and “ENTERED” states rather than invented example dates or document numbers.
-
