@@ -18,4 +18,4 @@ http.createServer((request,response)=>{
     response.setHeader('Content-Type',contentTypes[path.extname(file).toLowerCase()]||'application/octet-stream');
     response.end(body);
   });
-}).listen(port,'127.0.0.1',()=>console.log(`Depot Run available at http://127.0.0.1:${port}`));
+}).listen(port,'127.0.0.1',()=>console.log(`Procedures:GO available at http://127.0.0.1:${port}`));

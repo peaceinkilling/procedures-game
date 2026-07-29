@@ -94,7 +94,10 @@ assert.ok(uiSource.includes('updateRecordConsole')&&html.includes('id="recordCon
 assert.ok(html.includes('id="joystick"')&&mainSource.includes('engine.navigateToOffice(office.id)')&&engineSource.includes('autoNavigation'),'Mobile play must provide continuous joystick movement and tap-to-route.');
 assert.ok(uiSource.includes('Contingencies / situations')&&uiSource.includes('Normal route'),'Office entry must separate normal questions from source-backed contingencies.');
 assert.ok(html.includes('By <b>Sahil(105)</b>'),'Creator credit must remain visible in the persistent header.');
-assert.ok(/<h1>Depot Run: Issue & Receipt<\/h1>\s*<div class="creator-mark"/.test(html),'Creator credit must sit beneath the Depot Run heading, not consume a separate HUD column.');
+assert.ok(/<h1>Procedures[\s\S]*brand-punct[\s\S]*brand-go[\s\S]*<\/h1>\s*<div class="creator-mark"/.test(html),'Creator credit must sit beneath the Procedures:GO heading, not consume a separate HUD column.');
+assert.ok(!html.includes('TACTICAL PROCEDURE SIMULATOR'),'The redundant line below the creator credit must remain removed.');
+assert.ok(html.includes('src/instrument-theme.css'),'The maintainable Procedures:GO instrument theme must load after the structural stylesheet.');
+assert.ok(mapSource.includes("ctx.font='32px Segoe UI Emoji'"),'Office and branch icons on the playable map must remain enlarged for rapid recognition.');
 assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
 assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
 assert.ok(html.includes('id="challengeLevel"')&&html.includes('data-difficulty="easy"')&&html.includes('data-difficulty="difficult"'),'Arcade and Exam must expose three selectable challenge levels.');

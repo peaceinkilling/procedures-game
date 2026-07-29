@@ -1,6 +1,6 @@
-# Procedures Game — Issue & Receipt
+# Procedures:GO — Issue & Receipt
 
-Play online: **https://peaceinkilling.github.io/procedures-game/**
+Play online: **https://peaceinkilling.github.io/procedures-go/**
 
 A responsive top-down learning game for the complete normal Army Ordnance Issue and Receipt procedures. It runs directly in a modern browser on phones, tablets and computers—no installation or offline file sharing is required.
 
@@ -31,7 +31,8 @@ The validator checks all 53 document/entity lifecycles, declared transitions, ca
 ## Architecture
 
 - `index.html` — semantic shell and Character Selection Hangar.
-- `src/styles.css` — responsive futuristic layout and visual system.
+- `src/styles.css` — responsive structural layout and component foundation.
+- `src/instrument-theme.css` — Procedures:GO precision-instrument visual theme.
 - `src/procedure-data.js` — offices, characters, campaign stages, routes and citations.
 - `src/map.js` — active-procedure map rendering and spatial interaction.
 - `src/ui.js` — Hangar, office dossiers, HUD, feedback and challenges.

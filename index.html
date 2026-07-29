@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Procedures Game — Issue & Receipt</title>
+  <title>Procedures:GO — Issue & Receipt</title>
   <link rel="stylesheet" href="src/styles.css?v=20260729-1">
+  <link rel="stylesheet" href="src/instrument-theme.css?v=20260729-1">
 </head>
 <body>
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <div class="brandmark" aria-hidden="true">◈</div>
+        <div class="brandmark" aria-hidden="true"><span>P</span><i>:</i><span>GO</span></div>
         <div>
-          <h1>Depot Run: Issue & Receipt</h1>
+          <h1>Procedures<span class="brand-punct">:</span><span class="brand-go">GO</span></h1>
           <div class="creator-mark" aria-label="Game creator">By <b>Sahil(105)</b></div>
-          <div class="sub">TACTICAL PROCEDURE SIMULATOR · SOURCE-REVIEWED TRAINING CORE</div>
         </div>
       </div>
       <div class="hud" aria-label="Mission statistics">
@@ -92,7 +92,7 @@
           </div>
         </div>
         <div class="card office-intel-card" id="officeIntelCard">
-          <div class="intel-kicker">CLICK ANY OFFICE · TACTICAL DOSSIER</div>
+          <div class="intel-kicker">CLICK ANY OFFICE · SECTION DOSSIER</div>
           <div class="intel-title"><span id="intelIcon">⌁</span><div><h3 id="intelName">Office intelligence</h3><p id="intelRole">Select an office on the map to inspect its role.</p></div></div>
           <div class="intel-context-grid">
             <div><b>Mission logic</b><p id="why">The game will explain why each office receives the document or stores.</p></div>
@@ -115,7 +115,7 @@
   <div class="overlay access-overlay" id="loginOverlay">
     <form class="modal access-card" id="accessForm">
       <div class="access-emblem">◈</div>
-      <div class="intel-kicker">DEPOT RUN · COURSE ACCESS</div>
+      <div class="intel-kicker">PROCEDURES:GO · COURSE ACCESS</div>
       <h2>Sign in to continue</h2>
       <p class="lead">Enter your name, select your course and provide your course password.</p>
       <label class="field">Name
@@ -131,7 +131,7 @@
         <input class="select" id="coursePassword" name="coursePassword" type="password" autocomplete="current-password" required placeholder="Enter course password">
       </label>
       <div class="feedback hidden" id="accessFeedback" aria-live="polite"></div>
-      <button class="btn primary access-submit" type="submit">Enter Procedures Game</button>
+      <button class="btn primary access-submit" type="submit">Enter Procedures:GO</button>
     </form>
   </div>
 
@@ -232,7 +232,7 @@
   </div>
 
   <script src="src/procedure-data.js?v=20260729-1"></script>
-  <script src="src/map.js"></script>
+  <script src="src/map.js?v=20260729-2"></script>
   <script src="src/ui.js?v=20260729-1"></script>
   <script src="src/engine.js?v=20260729-1"></script>
   <script src="src/session.js?v=20260726-4"></script>

@@ -1,4 +1,4 @@
-name: Deploy Procedures Game to GitHub Pages
+name: Deploy Procedures:GO to GitHub Pages
 
 on:
   push:
