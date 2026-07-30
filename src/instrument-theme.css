@@ -409,6 +409,8 @@ canvas{filter:saturate(.82) contrast(1.06) brightness(.92)}
   .mission-strip{grid-template-columns:1fr auto}
   .option-card .ico{font-size:38px}
   .character-card .character-icon{font-size:34px}
+  .canvas-wrap{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(89,191,255,.45) transparent}
+  .canvas-wrap canvas{width:138%;max-width:none}
 }
 
 @media(max-width:430px){

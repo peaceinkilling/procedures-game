@@ -111,7 +111,10 @@ assert.ok(html.includes('By <b>Sahil(105)</b>'),'Creator credit must remain visi
 assert.ok(/<h1>Procedures[\s\S]*brand-punct[\s\S]*brand-go[\s\S]*<\/h1>\s*<div class="creator-mark"/.test(html),'Creator credit must sit beneath the Procedures:GO heading, not consume a separate HUD column.');
 assert.ok(!html.includes('TACTICAL PROCEDURE SIMULATOR'),'The redundant line below the creator credit must remain removed.');
 assert.ok(html.includes('src/instrument-theme.css'),'The maintainable Procedures:GO instrument theme must load after the structural stylesheet.');
-assert.ok(mapSource.includes("ctx.font='32px Segoe UI Emoji'"),'Office and branch icons on the playable map must remain enlarged for rapid recognition.');
+assert.ok(mapSource.includes('officeLabelFont')&&mapSource.includes("ctx.font='38px Segoe UI Emoji'"),'Office names and icons on the playable map must remain enlarged and fitted for mobile recognition.');
+assert.ok(mapSource.includes('expandOfficeCard')&&mapSource.includes('focusOffice')&&uiSource.includes('map.focusOffice?.(target,game.procedure)'),'Office cards must use the available grid space and the mobile camera must center its zoom on the current objective.');
+assert.ok(uiSource.includes("start.textContent=\"Let's play\""),'Every playable mission launcher must use the simple “Let’s play” label.');
+assert.ok(!uiSource.includes('<b>Status:</b>')&&!uiSource.includes('<b>Closure proof:</b>')&&!uiSource.includes('<b>Review note:</b>'),'Character selection must not show the removed technical status, closure-proof or review-note footer.');
 assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
 assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
 assert.ok(uiSource.includes('Exact bundle now')&&uiSource.includes('Action and evidence')&&uiSource.includes('After this desk'),'Copy-specific stage questions must expose the exact bundle, action and next custody picture.');
