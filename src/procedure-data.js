@@ -38,6 +38,15 @@
     {id:'DAO',label:'DAO DISCREPANCY',icon:'⚖️',x:75,y:210,w:175,h:95,color:'#774653'}
   ];
 
+  const officeNames={
+    Issue:{
+      DemandingUnit:'Demanding unit / indenter',HQ:'Headquarters Section',ISS:'Indent Sorting Section',ULC:'Unit Location Cell',IndentChecking:'Indent Checking Section',ICR:'Control Registry',VoucherPrep:'Voucher Preparation Section',SDIC:'Sub Depot Issue Control',DOC:'Dues Out Control',MLRS:'Master Location Record Section',Selection:'Selection of Stores',Packing:'Packing Section',Traffic:'Traffic Branch Issue Section',CentralRegistry:'Central Registry',CAB:'Central Account Branch',SM:'S&M Branch',RPS:'Central Records Section / Records and Progress Section',LAO:'Local Audit Officer'
+    },
+    Receipt:{
+      Consignor:'Consignor',CentralRegistry:'Central Registry',Provision:'Provision Branch',TrafficReceipts:'Traffic Branch (Receipts)',ReceiptProgress:'Sub Depot/Group Receipts Progress Section',ReceiptArea:'Sub Depot/Group Receipts Area',ReceiptLiaison:'Receipts Liaison Section',ReceiptControl:'Receipts Control Registry',MLRS:'Master Location Records Section',DOC:'Dues Out Review Cell (DOC)',FPVRelease:'Further Part Voucher Release Cell (DOC)',DuesOutSuspense:'Dues Out Suspense Area',BulkStore:'Bulk/Detail Store House / Area',Packing:'Packing Section — Issue Procedure hand-off',ReceiptDiscrepancy:'Sub Depot/Group Receipts Office Discrepancy Section',DAO:'Depot Accounts Officer — Central Discrepancy Section',CAB:'Central Accounts Branch',RPS:'Records and Progress Section / Central Record Section'
+    }
+  };
+
   const officeWhy = {
     DemandingUnit:'The user unit originates the authorised requirement and, at the end, receives or acknowledges the issue.',
     HQ:'HQ Section date-stamps the demanding document and introduces it into the depot system.',
@@ -119,14 +128,14 @@
 
   const mapLayouts={
     Issue:{
-      HQ:{x:20,y:35,w:165,h:90},ISS:{x:215,y:35,w:165,h:90},ULC:{x:410,y:35,w:165,h:90},IndentChecking:{x:605,y:35,w:165,h:90},ICR:{x:800,y:35,w:165,h:90},VoucherPrep:{x:995,y:35,w:165,h:90},
-      Traffic:{x:20,y:205,w:165,h:95},Packing:{x:215,y:205,w:165,h:95},Selection:{x:410,y:205,w:165,h:95},MLRS:{x:605,y:205,w:165,h:95},DOC:{x:800,y:205,w:165,h:95},SDIC:{x:995,y:205,w:165,h:95},
-      DemandingUnit:{x:20,y:525,w:165,h:100},CentralRegistry:{x:215,y:525,w:165,h:100},CAB:{x:410,y:525,w:165,h:100},SM:{x:605,y:525,w:165,h:100},RPS:{x:800,y:525,w:165,h:100},LAO:{x:995,y:525,w:165,h:100}
+      HQ:{x:20,y:35,w:165,h:90},SDIC:{x:215,y:35,w:165,h:90},CAB:{x:410,y:35,w:165,h:90},ULC:{x:605,y:35,w:165,h:90},Traffic:{x:800,y:35,w:165,h:90},VoucherPrep:{x:995,y:35,w:165,h:90},
+      Selection:{x:20,y:205,w:165,h:95},ICR:{x:215,y:205,w:165,h:95},LAO:{x:410,y:205,w:165,h:95},ISS:{x:605,y:205,w:165,h:95},MLRS:{x:800,y:205,w:165,h:95},CentralRegistry:{x:995,y:205,w:165,h:95},
+      RPS:{x:20,y:525,w:165,h:100},Packing:{x:215,y:525,w:165,h:100},DemandingUnit:{x:410,y:525,w:165,h:100},SM:{x:605,y:525,w:165,h:100},IndentChecking:{x:800,y:525,w:165,h:100},DOC:{x:995,y:525,w:165,h:100}
     },
     Receipt:{
-      Provision:{x:20,y:35,w:165,h:90},TrafficReceipts:{x:215,y:35,w:165,h:90},ReceiptProgress:{x:410,y:35,w:165,h:90},ReceiptArea:{x:605,y:35,w:165,h:90},ReceiptLiaison:{x:800,y:35,w:165,h:90},ReceiptControl:{x:995,y:35,w:165,h:90},
-      DAO:{x:20,y:205,w:165,h:95},ReceiptDiscrepancy:{x:215,y:205,w:165,h:95},Packing:{x:410,y:205,w:165,h:95},BulkStore:{x:605,y:205,w:165,h:95},DuesOutSuspense:{x:800,y:205,w:165,h:95},FPVRelease:{x:995,y:205,w:165,h:95},
-      Consignor:{x:20,y:525,w:165,h:100},CentralRegistry:{x:215,y:525,w:165,h:100},MLRS:{x:410,y:525,w:165,h:100},DOC:{x:605,y:525,w:165,h:100},CAB:{x:800,y:525,w:165,h:100},RPS:{x:995,y:525,w:165,h:100}
+      ReceiptArea:{x:20,y:35,w:165,h:90},Provision:{x:215,y:35,w:165,h:90},RPS:{x:410,y:35,w:165,h:90},TrafficReceipts:{x:605,y:35,w:165,h:90},DuesOutSuspense:{x:800,y:35,w:165,h:90},ReceiptControl:{x:995,y:35,w:165,h:90},
+      CAB:{x:20,y:205,w:165,h:95},ReceiptLiaison:{x:215,y:205,w:165,h:95},DAO:{x:410,y:205,w:165,h:95},MLRS:{x:605,y:205,w:165,h:95},Consignor:{x:800,y:205,w:165,h:95},FPVRelease:{x:995,y:205,w:165,h:95},
+      ReceiptProgress:{x:20,y:525,w:165,h:100},Packing:{x:215,y:525,w:165,h:100},BulkStore:{x:410,y:525,w:165,h:100},CentralRegistry:{x:605,y:525,w:165,h:100},ReceiptDiscrepancy:{x:800,y:525,w:165,h:100},DOC:{x:995,y:525,w:165,h:100}
     }
   };
 
@@ -295,7 +304,7 @@
     receiptApproved('discrepancyReport','Receipt Discrepancy Report','Accounting and exception entities','⚠️',receiptRoutes.discrepancyReport,'Consignor/DAO discrepancy case until settlement','DAO DR number and progressed settlement',[raosReceipt,'DGOSTI-001 Appendices N and P (PDF pp.49–55)']),
     receiptApproved('adjustmentVoucher','Receipt adjustment voucher','Accounting and exception entities','⚖️',receiptRoutes.adjustmentVoucher,'CAB file linked to RV1 and sanctioned loss statement','Adjustment control number and posting evidence',[raosReceipt,'DGOSTI-001 Appendices N–P (PDF pp.49–55)']),
     receiptApproved('receiptedRv2','Receipted acknowledgement (RV2)','Accounting and exception entities','✍️',receiptRoutes.receiptedRv2,'Consignor','Provision and R&PS/CRS clearance records',[raosReceipt,dgosReceipt]),
-    receiptApproved('crvException','Credit Receipt Voucher (CRV) exception','Accounting and exception entities','🧾',receiptRoutes.crvException,'CRV destroyed after regular-voucher linking, or retained and escalated under the six-month exception','RCRS and DRS carry linking or government-sanction evidence',[raosReceipt,'DGOSTI-001 Appendix D paras 3, 5(c) and 7; Appendix Q para 5 (PDF pp.25–30, 57–58)'],{companion:'CRV copies split to Accounts, R&PS/CRS and Receipts Progress; the mission teaches the normal-link and six-month escalation branches.',waitingElsewhere:'Triplicate CRV and packing notes remain in the consignor pad while the regular voucher is hastened.'}),
+    receiptApproved('crvException','Certificate Receipt Voucher (CRV) exception','Accounting and exception entities','🧾',receiptRoutes.crvException,'CRV destroyed after regular-voucher linking, or retained and escalated under the six-month exception','RCRS and DRS carry linking or government-sanction evidence',['RAOS Part II abbreviations: CRV — Certificate Receipt Voucher (PDF p.4)',raosReceipt,'DGOSTI-001 Appendix D paras 3, 5(c) and 7; Appendix Q para 5 (PDF pp.25–30, 57–58)'],{companion:'CRV copies split to Accounts, R&PS/CRS and Receipts Progress; the mission teaches the normal-link and six-month escalation branches.',waitingElsewhere:'Triplicate CRV and packing notes remain in the consignor pad while the regular voucher is hastened.'}),
     receiptApproved('ctcException','Certified True Copy (CTC) for a missing receipt-voucher copy','Accounting and exception entities','📑',receiptRoutes.ctcException,'Consignor receives the CTC acting as RV2; retained trap copy is destroyed as prescribed','RCRS is marked CTC and later cleared when the regular copy is linked',[raosReceipt,'DGOSTI-001 Appendix D paras 3(b), 5(b) and 7; Appendix G para 2; Appendix Q para 5 (PDF pp.26, 28–30, 39, 57–58)'],{companion:'One CTC travels as the missing copy while the other is retained in the consignor-pad trap.',waitingElsewhere:'The retained CTC waits for the regular voucher and is destroyed on linking or after the prescribed trap period.'})
   );
 
@@ -921,7 +930,7 @@
   return {
     procedure:'Issue and Receipt',
     receiptImplemented:true,
-    offices,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,characterFocusSwitches,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,officeSituations,formSchemas,formByRole,documentProfiles,officeDocumentSets,characterStageEvents,mainCharacterIds,
+    offices,officeNames,officeWhy,officeIntel,mapLayouts,routes,branchRoutes,receiptRouteVariants,characterFocusSwitches,fullIssueRoute,fullReceiptRoute,campaigns,characters,transitions,officeSituations,formSchemas,formByRole,documentProfiles,officeDocumentSets,characterStageEvents,mainCharacterIds,
     roleInfo:legacy,
     mapOfficeIds:{Issue:['DemandingUnit','HQ','ISS','ULC','IndentChecking','ICR','VoucherPrep','SDIC','DOC','MLRS','Selection','Packing','Traffic','CentralRegistry','CAB','SM','RPS','LAO'],Receipt:['Consignor','CentralRegistry','Provision','TrafficReceipts','ReceiptProgress','ReceiptArea','ReceiptLiaison','ReceiptControl','MLRS','DOC','FPVRelease','DuesOutSuspense','BulkStore','Packing','ReceiptDiscrepancy','DAO','CAB','RPS']},
     sourcePolicy:{primary:['RAOS Part II','DGOSTI-002','DGOSTI-001'],providedPrimaryExtracts:true,sourceMap:'docs/PROCEDURE_SOURCE_MAP.md'}

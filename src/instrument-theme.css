@@ -395,6 +395,9 @@ canvas{filter:saturate(.82) contrast(1.06) brightness(.92)}
   border-color:rgba(89,191,255,.55);
   box-shadow:0 0 0 3px rgba(89,191,255,.12);
 }
+.office-heading{display:flex;flex-direction:column;gap:4px}
+.office-heading span{color:#58dbff;font-size:10px;font-weight:900;letter-spacing:.16em}
+.challenge-caption{margin:-3px 0 12px;color:#a9bdc8;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
 
 @media(max-width:720px){
   .app{padding:6px}

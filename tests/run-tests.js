@@ -84,6 +84,12 @@ const issueGrid=Object.values(data.mapLayouts.Issue);
 assert.deepStrictEqual([...new Set(issueGrid.map(office=>office.w))],[165],'Every Issue office card must use the same width.');
 assert.deepStrictEqual([...new Set(issueGrid.map(office=>office.x))],[20,215,410,605,800,995],'Issue offices must align to the same six columns.');
 assert.deepStrictEqual([...new Set(issueGrid.map(office=>office.y))],[35,205,525],'Issue offices must align to three orderly rows.');
+const rowOrder=(procedure,y)=>Object.entries(data.mapLayouts[procedure]).filter(([,office])=>office.y===y).sort((a,b)=>a[1].x-b[1].x).map(([id])=>id);
+assert.deepStrictEqual(rowOrder('Issue',35),['HQ','SDIC','CAB','ULC','Traffic','VoucherPrep'],'The orderly Issue grid must not reveal the office route as a linear sequence.');
+assert.deepStrictEqual(rowOrder('Receipt',35),['ReceiptArea','Provision','RPS','TrafficReceipts','DuesOutSuspense','ReceiptControl'],'The orderly Receipt grid must not reveal the office route as a linear sequence.');
+assert.strictEqual(data.officeNames.Issue.ISS,'Indent Sorting Section','ISS must expand to the DGOSTI-002 office heading.');
+assert.match(data.characters.find(item=>item.id==='crvException').name,/^Certificate Receipt Voucher \(CRV\)/,'CRV must use the RAOS Part II expansion Certificate Receipt Voucher.');
+assert.ok(!/Credit Receipt Voucher|Certified Issue Voucher/.test(JSON.stringify(data)),'Unsupported CRV expansions must not return to procedure data.');
 
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const engineSource=fs.readFileSync(path.join(__dirname,'..','src','engine.js'),'utf8');
@@ -117,6 +123,7 @@ assert.ok(!html.includes('TACTICAL PROCEDURE SIMULATOR'),'The redundant line bel
 assert.ok(html.includes('src/instrument-theme.css'),'The maintainable Procedures:GO instrument theme must load after the structural stylesheet.');
 assert.ok(mapSource.includes('officeLabelFont')&&mapSource.includes("ctx.font='38px Segoe UI Emoji'"),'Office names and icons on the playable map must remain enlarged and fitted for mobile recognition.');
 assert.ok(mapSource.includes('expandOfficeCard')&&mapSource.includes('focusOffice')&&uiSource.includes('map.focusOffice?.(target,game.procedure)'),'Office cards must use the available grid space and the mobile camera must center its zoom on the current objective.');
+assert.ok(uiSource.includes('office.fullName')&&mapSource.includes('data.officeNames?.[procedure]?.[id]'),'Office entry and dossier views must expand map acronyms to their audited official names.');
 assert.ok(uiSource.includes("start.textContent=\"Let's play\""),'Every playable mission launcher must use the simple “Let’s play” label.');
 assert.ok(!uiSource.includes('<b>Status:</b>')&&!uiSource.includes('<b>Closure proof:</b>')&&!uiSource.includes('<b>Review note:</b>'),'Character selection must not show the removed technical status, closure-proof or review-note footer.');
 assert.ok(!/All 53 Issue and Receipt|Source-reviewed and playable|Qualified ruling|Verified Sections|Verified Documents|verified\/qualified stages|SOURCE-VERIFIED OFFICE PROFILE|ONLY SOURCE-SUPPORTED CONTENT IS SHOWN|Evidence Review Lab/i.test(`${html}\n${uiSource}\n${archiveSource}`),'Player-facing screens must not expose rollout and development-status commentary.');
@@ -162,6 +169,7 @@ for(const procedure of ['Issue','Receipt']){
     assert.ok(profile.officialName&&profile.classification&&profile.sequence&&profile.role&&profile.boundary,`${procedure} Archive office needs official identity and procedural boundary.`);
     assert.ok(profile.actions.length&&profile.actions.every(item=>item.text&&item.evidence?.source&&item.evidence?.reference&&item.evidence?.pages),`${profile.officialName} actions must have paragraph/page citations.`);
   }
+  for(const [id,profile] of Object.entries(archiveData.offices[procedure]))assert.strictEqual(data.officeNames[procedure][id],profile.officialName,`${procedure} office ${id} must show its exact Archive/DGOSTI name when entered.`);
   for(const profile of archiveData.documents[procedure]){
     assert.ok(profile.origin&&profile.purpose&&profile.disposal,`${profile.id} needs verified origin, purpose and disposal.`);
     assert.ok(profile.contents.length&&profile.contents.every(item=>item.name&&item.text&&item.evidence?.reference),`${profile.id} contents must be cited.`);

@@ -65,7 +65,7 @@
   function showOfficeIntel(id,procedure=root.DepotEngine?.game?.procedure||byId('procedureSelect').value){
     const office=map.building(id,procedure),details=data.officeIntel?.[procedure]?.[id];if(!office||!details)return;
     const render=(elementId,items)=>{byId(elementId).innerHTML='';items.forEach(text=>{const item=document.createElement('li');item.textContent=text;byId(elementId).appendChild(item)})};
-    byId('intelIcon').textContent=office.icon;byId('intelName').textContent=office.label;byId('intelRole').textContent=details.role;byId('intelMemory').textContent=details.memory;
+    byId('intelIcon').textContent=office.icon;byId('intelName').textContent=office.fullName;byId('intelRole').textContent=details.role;byId('intelMemory').textContent=details.memory;
     render('intelActions',details.actions);render('intelSituations',details.situations);render('intelDeviations',details.deviations);byId('intelSource').textContent=`SOURCE BASIS · ${details.source}`;
     byId('officeIntelCard').classList.remove('intel-pulse');requestAnimationFrame(()=>byId('officeIntelCard').classList.add('intel-pulse'));
   }
@@ -115,12 +115,12 @@
     const game=root.DepotEngine.game;if(!game.running)return'';
     const officeId=game.route[game.index],office=map.building(officeId,game.procedure),character=data.characters.find(item=>item.id===game.role),stage=routeStage(game),previousStage=game.index?routeStage(game,game.index-1):null,identity=stage?.focus||character?.name||game.cargo.name;
     const companionNames=activeDocumentIds(game).filter(id=>id!==game.role).slice(0,5).map(id=>data.documentProfiles[id].title),companions=stage?.companion||(companionNames.length?companionNames.join(', '):character?.companion)||'No additional travelling document is asserted.';
-    const movement=game.index===0?`Your lifecycle begins at <b>${office.label}</b>.`:previousStage?.handoffToNext==='focus-switch'?`The simulation now switches to a parallel copy or branch at <b>${office.label}</b>; no transfer from the previous office is being claimed.`:`You have arrived at <b>${office.label}</b> from <b>${map.building(game.route[game.index-1],game.procedure).label}</b>.`;
+    const movement=game.index===0?`Your lifecycle begins at <b>${office.fullName}</b>.`:previousStage?.handoffToNext==='focus-switch'?`The simulation now switches to a parallel copy or branch at <b>${office.fullName}</b>; no transfer from the previous office is being claimed.`:`You have arrived at <b>${office.fullName}</b> from <b>${map.building(game.route[game.index-1],game.procedure).fullName}</b>.`;
     return `<div class="flow-narrative"><span>FLOW SNAPSHOT · ${game.index+1}/${game.route.length}</span><p>You are <b>${identity}</b>. ${movement} <b>Current bundle:</b> ${companions} <b>What happens next?</b></p></div>`;
   }
-  function showMini(title,lead,content){root.DepotEngine.game.paused=true;byId('miniModal').innerHTML=`<h2>${title}</h2>${flowNarrative()}<p class="lead">${lead}</p><div class="minigame">${content}</div>`;prepareChoices();byId('miniOverlay').classList.remove('hidden');setTimeout(()=>byId('miniModal').querySelector('button:not(:disabled)')?.focus(),0)}
+  function showMini(title,lead,content,showOfficeHeading=true){const game=root.DepotEngine.game,office=game.running?map.building(game.route[game.index],game.procedure):null,heading=showOfficeHeading&&office?`<h2 class="office-heading"><span>${office.label}</span>${office.fullName}</h2>${title&&title!==office.fullName?`<div class="challenge-caption">${title}</div>`:''}`:`<h2>${title}</h2>`;game.paused=true;byId('miniModal').innerHTML=`${heading}${flowNarrative()}<p class="lead">${lead}</p><div class="minigame">${content}</div>`;prepareChoices();byId('miniOverlay').classList.remove('hidden');setTimeout(()=>byId('miniModal').querySelector('button:not(:disabled)')?.focus(),0)}
   function closeMini(){byId('miniOverlay').classList.add('hidden');root.DepotEngine.game.paused=false}
-  function showBriefFeedback(title,text){showMini(title,text,'<div class="feedback">Study the reason, then return to the map.</div><div style="margin-top:10px;text-align:right"><button class="btn primary" id="briefClose" type="button">Continue</button></div>');byId('briefClose').addEventListener('click',closeMini)}
+  function showBriefFeedback(title,text){showMini(title,text,'<div class="feedback">Study the reason, then return to the map.</div><div style="margin-top:10px;text-align:right"><button class="btn primary" id="briefClose" type="button">Continue</button></div>',false);byId('briefClose').addEventListener('click',closeMini)}
   function bindChoices(onCorrect,wrongText){document.querySelectorAll('#miniModal .choice').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.ok==='1'){button.classList.add('good');setTimeout(onCorrect,250)}else{button.classList.add('bad');root.DepotEngine.failMini(wrongText)}}))}
   const complete=()=>{closeMini();root.DepotEngine.completeStep()};
 

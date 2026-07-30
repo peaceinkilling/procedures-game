@@ -86,7 +86,7 @@
   async function officeIntelClickProbe(){
     setScenario('iv1','learn','role');const office=root.DepotMap.building('Packing','Issue'),canvas=root.DepotMap.canvas,bounds=canvas.getBoundingClientRect();
     canvas.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,pointerType:'mouse',clientX:bounds.left+(office.x+office.w/2)*bounds.width/root.DepotMap.width,clientY:bounds.top+(office.y+office.h/2)*bounds.height/root.DepotMap.height}));
-    if(document.getElementById('intelName').textContent!=='PACKING')throw new Error('Clicking Packing did not load its office dossier');
+    if(document.getElementById('intelName').textContent!==office.fullName)throw new Error('Clicking Packing did not load its official office dossier');
     for(const id of ['intelActions','intelSituations','intelDeviations'])if(!document.getElementById(id).querySelectorAll('li').length)throw new Error(`Office dossier ${id} is empty`);
     root.DepotEngine.quitGame();return true;
   }
@@ -108,7 +108,7 @@
     canvas.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,pointerType:'mouse',clientX:bounds.left+(office.x+office.w/2)*bounds.width/root.DepotMap.width,clientY:bounds.top+(office.y+office.h/2)*bounds.height/root.DepotMap.height}));
     for(let tries=0;tries<500&&!game.paused;tries++)await wait(10);
     if(!game.paused||document.getElementById('miniOverlay').classList.contains('hidden'))throw new Error('Desktop click on the current objective did not auto-route and open the office');
-    if(document.getElementById('intelName').textContent!=='CAB / ACCOUNTS')throw new Error('Desktop objective click did not retain the office dossier');
+    if(document.getElementById('intelName').textContent!==office.fullName)throw new Error('Desktop objective click did not retain the official office dossier');
     root.DepotUI.closeMini();root.DepotEngine.quitGame();return true;
   }
   async function reviewLabProbe(character){

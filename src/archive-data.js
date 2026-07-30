@@ -513,7 +513,7 @@
       flow('CAB','Central Accounts Branch','Posts the adjustment immediately after the connected receipt voucher.',receipt('Appendix O para 3(f)','PDF p.52')),
       flow('DAO','DAO / Adjustment Control Registry','Schedules one copy to LAO and retains the settlement copies.',receipt('Appendix P para 4(c)–(d)','PDF p.55'))
     ],'One copy to LAO; remaining copies retained/linked in Accounts and the DR case as prescribed.',[receipt('Appendices N–P','PDF pp.49–55')]),
-    document('crvException','Credit Receipt Voucher (CRV)','Prepared in triplicate only when both normal RV copies are unavailable.','Receipts Area, with packages opened in the presence of an officer.','Self-contained provisional receipt document pending regular-voucher linkage.',[
+    document('crvException','Certificate Receipt Voucher (CRV)','Prepared in triplicate only when both normal RV copies are unavailable.','Receipts Area, with packages opened in the presence of an officer.','Self-contained provisional receipt document pending regular-voucher linkage.',[
       field('Consignor and transit','Consignor/address; RR/PWB/Convoy Note/Indemnity Bond/post receipt; wagon/vehicle; DRS.',receipt('Appendix E para 6(a)–(e)','PDF pp.31–32')),
       field('Linking evidence','Consignor IV if available; package/railway markings; marked and received weights; packing materials; Packing Note; escort signature.',receipt('Appendix E para 6(f)–(k)','PDF p.32')),
       field('Progress stamp','Regular-voucher demand reference/date; expeditor; date RV received; date RV passed to Accounts/CRS.',receipt('Appendix D para 5(c)','PDF p.28'),'reverse')
@@ -523,7 +523,7 @@
       flow('ReceiptProgress','Receipts Progress','Retains No.3 as a trap and hastens the regular voucher.',receipt('Appendix D para 5(c)','PDF pp.28–29')),
       flow('CAB','Central Accounts Branch','Posts CRV once and later links—not reposts—the regular voucher.',receipt('Appendix O para 6','PDF p.52')),
       flow('RPS','R&PS/CRS','Holds/clears the receipt copy under the prescribed linking or authority path.',receipt('Appendix Q para 5','PDF pp.57–58'))
-    ],'Destroyed or converted/linked only under the stated regular-voucher or authorised non-linking condition; six-month failures escalate through BAOC to Army HQ.',[receipt('Appendices D–G, O and Q','PDF pp.25–40, 51–58')]),
+    ],'Destroyed or converted/linked only under the stated regular-voucher or authorised non-linking condition; six-month failures escalate through BAOC to Army HQ.',[raos('Abbreviations: CRV — Certificate Receipt Voucher','PDF p.4'),receipt('Appendices D–G, O and Q','PDF pp.25–40, 51–58')]),
     document('ctcException','Certified True Copy for a missing Receipt Voucher copy','CTC of the available Receipt Voucher; copy identity must be boldly marked.','Sub Depot/Group Receipts Progress Section.','Temporarily replaces one missing RV copy without creating a second receipt.',[
       field('Missing RV1 case','RV2 is converted to RV1; two CTCs are made, one retained as trap and one travels with RV1/DRS2.',receipt('Appendix D para 5(b)','PDF p.28')),
       field('Missing RV2 case','One CTC of traced RV1 is prepared and marked “Copy 2.”',receipt('Appendix D para 5(b)','PDF p.28')),

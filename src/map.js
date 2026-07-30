@@ -14,7 +14,7 @@
     const horizontal=item.w<=100?5:10,vertical=7;
     return {...item,x:item.x-horizontal,y:item.y-vertical,w:item.w+horizontal*2,h:item.h+vertical*2};
   }
-  function building(id,procedure){const item=data.offices.find(candidate=>candidate.id===id);if(!item)return item;const layout=procedure&&data.mapLayouts&&data.mapLayouts[procedure]&&data.mapLayouts[procedure][id],positioned=layout?{...item,...layout}:item;return expandOfficeCard(positioned)}
+  function building(id,procedure){const item=data.offices.find(candidate=>candidate.id===id);if(!item)return item;const layout=procedure&&data.mapLayouts&&data.mapLayouts[procedure]&&data.mapLayouts[procedure][id],fullName=data.officeNames?.[procedure]?.[id]||item.label,positioned=layout?{...item,...layout,fullName}:{...item,fullName};return expandOfficeCard(positioned)}
   function center(item){return{x:item.x+item.w/2,y:item.y+item.h/2}}
   function distance(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
   function activeOffices(procedure){const ids=data.mapOfficeIds?data.mapOfficeIds[procedure]:data.offices.map(item=>item.id);return ids.map(id=>building(id,procedure)).filter(Boolean)}

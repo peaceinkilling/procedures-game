@@ -27,7 +27,7 @@ Verified normal flow:
 
 Verified Receipt exceptions:
 
-- CRV: the playable lifecycle models stores received without a voucher, three-copy control, account posting, regular-voucher hastening/linking, destruction or CTC conversion, and the six-month BAOC/Army HQ escalation. DGOSTI-001 Appendix D paras 3, 5(c), 7 and Appendix Q para 5, PDF pages 25–30 and 57–58.
+- CRV means Certificate Receipt Voucher (RAOS Part II abbreviations, PDF page 4). Its playable lifecycle models stores received without a voucher, three-copy control, account posting, regular-voucher hastening/linking, destruction or CTC conversion, and the six-month BAOC/Army HQ escalation. DGOSTI-001 Appendix D paras 3, 5(c), 7 and Appendix Q para 5, PDF pages 25–30 and 57–58.
 - CTC: the playable lifecycle is specifically the missing-receipt-voucher-copy case. It models conversion of RV2 to RV1, two CTC copies, the retained trap copy, receipt control, normal clearance, consignor return and destruction on linking. It does not conflate the separate missing-convoy-note-copy case. DGOSTI-001 Appendix D paras 3(b), 5(b), 7; Appendix G para 2; Appendix Q para 5, PDF pages 26, 28–30, 39 and 57–58.
 
 All 53 roster entities now have playable routes. The Issue source map records the source-qualified IV2/IV5 ruling and the IRPS-equivalent clarification. The isolated DGOSTI-002 para 213(n) wording remains disclosed beside every affected route and is guarded by automated tests.
