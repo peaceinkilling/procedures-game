@@ -80,6 +80,10 @@ for(const procedure of ['Issue','Receipt']){
     assert.ok(!overlaps,`${procedure} offices ${a.id} and ${b.id} overlap or lack visual clearance.`);
   }
 }
+const issueGrid=Object.values(data.mapLayouts.Issue);
+assert.deepStrictEqual([...new Set(issueGrid.map(office=>office.w))],[165],'Every Issue office card must use the same width.');
+assert.deepStrictEqual([...new Set(issueGrid.map(office=>office.x))],[20,215,410,605,800,995],'Issue offices must align to the same six columns.');
+assert.deepStrictEqual([...new Set(issueGrid.map(office=>office.y))],[35,205,525],'Issue offices must align to three orderly rows.');
 
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const engineSource=fs.readFileSync(path.join(__dirname,'..','src','engine.js'),'utf8');
@@ -115,6 +119,7 @@ assert.ok(mapSource.includes('officeLabelFont')&&mapSource.includes("ctx.font='3
 assert.ok(mapSource.includes('expandOfficeCard')&&mapSource.includes('focusOffice')&&uiSource.includes('map.focusOffice?.(target,game.procedure)'),'Office cards must use the available grid space and the mobile camera must center its zoom on the current objective.');
 assert.ok(uiSource.includes("start.textContent=\"Let's play\""),'Every playable mission launcher must use the simple “Let’s play” label.');
 assert.ok(!uiSource.includes('<b>Status:</b>')&&!uiSource.includes('<b>Closure proof:</b>')&&!uiSource.includes('<b>Review note:</b>'),'Character selection must not show the removed technical status, closure-proof or review-note footer.');
+assert.ok(!/All 53 Issue and Receipt|Source-reviewed and playable|Qualified ruling|Verified Sections|Verified Documents|verified\/qualified stages|SOURCE-VERIFIED OFFICE PROFILE|ONLY SOURCE-SUPPORTED CONTENT IS SHOWN|Evidence Review Lab/i.test(`${html}\n${uiSource}\n${archiveSource}`),'Player-facing screens must not expose rollout and development-status commentary.');
 assert.ok(html.includes('id="documentConstellation"')&&uiSource.includes('updateDocumentConstellation'),'A stage-aware document constellation must remain outside the playable map.');
 assert.ok(uiSource.includes('FLOW SNAPSHOT')&&uiSource.includes('What happens next?'),'Every playable question must receive a short procedural-flow narrative.');
 assert.ok(uiSource.includes('Exact bundle now')&&uiSource.includes('Action and evidence')&&uiSource.includes('After this desk'),'Copy-specific stage questions must expose the exact bundle, action and next custody picture.');

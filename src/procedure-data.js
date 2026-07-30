@@ -117,11 +117,18 @@
     }
   };
 
-  const mapLayouts={Receipt:{
-    Provision:{x:20,y:35,w:165,h:90},TrafficReceipts:{x:215,y:35,w:165,h:90},ReceiptProgress:{x:410,y:35,w:165,h:90},ReceiptArea:{x:605,y:35,w:165,h:90},ReceiptLiaison:{x:800,y:35,w:165,h:90},ReceiptControl:{x:995,y:35,w:165,h:90},
-    DAO:{x:20,y:205,w:165,h:95},ReceiptDiscrepancy:{x:215,y:205,w:165,h:95},Packing:{x:410,y:205,w:165,h:95},BulkStore:{x:605,y:205,w:165,h:95},DuesOutSuspense:{x:800,y:205,w:165,h:95},FPVRelease:{x:995,y:205,w:165,h:95},
-    Consignor:{x:20,y:525,w:165,h:100},CentralRegistry:{x:215,y:525,w:165,h:100},MLRS:{x:410,y:525,w:165,h:100},DOC:{x:605,y:525,w:165,h:100},CAB:{x:800,y:525,w:165,h:100},RPS:{x:995,y:525,w:165,h:100}
-  }};
+  const mapLayouts={
+    Issue:{
+      HQ:{x:20,y:35,w:165,h:90},ISS:{x:215,y:35,w:165,h:90},ULC:{x:410,y:35,w:165,h:90},IndentChecking:{x:605,y:35,w:165,h:90},ICR:{x:800,y:35,w:165,h:90},VoucherPrep:{x:995,y:35,w:165,h:90},
+      Traffic:{x:20,y:205,w:165,h:95},Packing:{x:215,y:205,w:165,h:95},Selection:{x:410,y:205,w:165,h:95},MLRS:{x:605,y:205,w:165,h:95},DOC:{x:800,y:205,w:165,h:95},SDIC:{x:995,y:205,w:165,h:95},
+      DemandingUnit:{x:20,y:525,w:165,h:100},CentralRegistry:{x:215,y:525,w:165,h:100},CAB:{x:410,y:525,w:165,h:100},SM:{x:605,y:525,w:165,h:100},RPS:{x:800,y:525,w:165,h:100},LAO:{x:995,y:525,w:165,h:100}
+    },
+    Receipt:{
+      Provision:{x:20,y:35,w:165,h:90},TrafficReceipts:{x:215,y:35,w:165,h:90},ReceiptProgress:{x:410,y:35,w:165,h:90},ReceiptArea:{x:605,y:35,w:165,h:90},ReceiptLiaison:{x:800,y:35,w:165,h:90},ReceiptControl:{x:995,y:35,w:165,h:90},
+      DAO:{x:20,y:205,w:165,h:95},ReceiptDiscrepancy:{x:215,y:205,w:165,h:95},Packing:{x:410,y:205,w:165,h:95},BulkStore:{x:605,y:205,w:165,h:95},DuesOutSuspense:{x:800,y:205,w:165,h:95},FPVRelease:{x:995,y:205,w:165,h:95},
+      Consignor:{x:20,y:525,w:165,h:100},CentralRegistry:{x:215,y:525,w:165,h:100},MLRS:{x:410,y:525,w:165,h:100},DOC:{x:605,y:525,w:165,h:100},CAB:{x:800,y:525,w:165,h:100},RPS:{x:995,y:525,w:165,h:100}
+    }
+  };
 
   const routes = {
     demand:['DemandingUnit','HQ','ISS','ULC','IndentChecking','ICR','VoucherPrep','RPS'],

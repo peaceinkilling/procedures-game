@@ -106,7 +106,7 @@
         </div>
         <div class="card"><h3>Route progress</h3><div class="route" id="route"></div></div>
         <div class="card"><h3>Custody & logic log</h3><div class="handoff-log" id="handoffLog"><p>No hand-off completed yet.</p></div></div>
-        <div class="card"><h3>Source status</h3><p id="sourceStatus">Choose a character to see its review status.</p></div>
+        <div class="card"><h3>Procedure references</h3><p id="sourceStatus">References for the active route will appear here.</p></div>
         <div class="card"><h3>Controls</h3><p class="tip"><b>Move:</b> WASD / arrow keys<br><b>Boost:</b> hold Shift<br><b>Office intel:</b> I (nearest office)<br><b>Interact:</b> E / Space<br><b>Menus:</b> Tab or arrows + Enter; number keys 1–4 answer<br><b>Mobile:</b> on-screen controls<br><b>Wrong office:</b> life and time penalty</p></div>
       </aside>
     </div>
@@ -138,7 +138,7 @@
   <div class="overlay hidden" id="archiveOverlay">
     <div class="modal archive-modal">
       <div class="archive-top">
-        <div><div class="intel-kicker">DGOSTI-VERIFIED KNOWLEDGE BASE</div><h2>Procedure Archive</h2><p class="lead">Official section names, cited actions, verified document contents and source-qualified lifecycle flowcharts.</p></div>
+        <div><div class="intel-kicker">PROCEDURE LIBRARY</div><h2>Procedure Archive</h2><p class="lead">Explore section roles, document contents, chronological actions and complete lifecycle flowcharts.</p></div>
         <button class="btn" id="archiveClose" type="button">Return to Game</button>
       </div>
       <div class="archive-toolbar">
@@ -161,7 +161,7 @@
   <div class="overlay" id="startOverlay">
     <div class="modal hangar-modal">
       <h2>Character Selection Hangar</h2>
-      <p class="lead">All 53 Issue and Receipt entities are source-reviewed and playable. Each character teaches its complete office route, copy-specific purpose, concurrent records, closure evidence and final disposition. The IV2/IV5 source anomaly remains disclosed wherever it matters.</p>
+      <p class="lead">Choose a learning mode, operation and procedure. Character Campaign lets you follow one document or store entity through its complete lifecycle.</p>
 
       <div class="section-title">1. Choose learning mode</div>
       <div class="mode-grid" id="modeGrid">
@@ -182,8 +182,8 @@
       <div class="section-title spaced">3. Choose operation</div>
       <div class="mission-grid" id="missionGrid">
         <button class="option-card selected" data-mission="campaign" type="button"><div class="ico">🏁</div><b>Full Procedure</b><span>Run the selected Issue or Receipt procedure across every principal branch and closure.</span></button>
-        <button class="option-card" data-mission="role" type="button"><div class="ico">📜</div><b>Character Campaign</b><span>Master the selected entity’s complete source-reviewed lifecycle.</span></button>
-        <button class="option-card" data-mission="random" type="button"><div class="ico">🎲</div><b>Random Character</b><span>Chooses a source-reviewed character from the selected procedure.</span></button>
+        <button class="option-card" data-mission="role" type="button"><div class="ico">📜</div><b>Character Campaign</b><span>Follow the selected entity through every office action and hand-off.</span></button>
+        <button class="option-card" data-mission="random" type="button"><div class="ico">🎲</div><b>Random Character</b><span>Chooses a character from the selected procedure.</span></button>
       </div>
 
       <div class="procedure-head">
@@ -212,7 +212,6 @@
       </div>
       <input type="hidden" id="roleSelect" value="iv1">
       <div class="start-row">
-        <div class="review-key"><span class="status-dot approved"></span> Source-reviewed and playable <span class="status-dot legacy"></span> Qualified ruling with disclosed source anomaly</div>
         <div><button class="btn" id="hangarArchiveBtn" type="button">Open Procedure Archive</button> <button class="btn primary" id="startBtn" type="button">Start Character Run</button></div>
       </div>
     </div>
@@ -231,13 +230,13 @@
     </div>
   </div>
 
-  <script src="src/procedure-data.js?v=20260729-3"></script>
+  <script src="src/procedure-data.js?v=20260730-4"></script>
   <script src="src/map.js?v=20260730-2"></script>
-  <script src="src/ui.js?v=20260730-2"></script>
-  <script src="src/engine.js?v=20260729-3"></script>
+  <script src="src/ui.js?v=20260730-3"></script>
+  <script src="src/engine.js?v=20260730-1"></script>
   <script src="src/session.js?v=20260726-4"></script>
   <script src="src/archive-data.js?v=20260729-1"></script>
-  <script src="src/archive.js?v=20260726-3"></script>
+  <script src="src/archive.js?v=20260730-1"></script>
   <script src="src/main.js?v=20260729-3"></script>
   <script src="src/smoke-runner.js?v=20260729-3"></script>
 </body>
